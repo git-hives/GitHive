@@ -51,6 +51,69 @@ class GitBranchHelper: runGit {
         }
     }
     
+    // 分支：获取本地所有分支
+    static func getLocalBranchListAsync(at LocalRepoDir: String, completion: @escaping ([Dictionary<String, Any>]) -> Void)  {
+        var result = [Dictionary<String, String>]()
+        
+        let formatForLocal = "--format='{\"name\": \"%(refname:short)\",\"hash\":\"%(objectname)\",\"authorname\":\" %(authorname)\",\"authoremail\":\" %(authoremail) \",\"committername\":\"%(committername)\",\"committeremail\":\" %(committeremail)\",\"subject\":\" %(subject)\", \"type\": \"local\"}'"
+        let cmd: [String] = ["branch", "-l", "-vv" ,formatForLocal]
+        runGit.executeGitAsync(at: LocalRepoDir, command: cmd) { output in
+            guard let output = output else {
+                completion(result)
+                return
+            }
+            let lines = output.split(separator: "\n")
+            for line in lines {
+                let lineWithoutQuotes = line.replacingOccurrences(of: "\'", with: "")
+                guard let data = lineWithoutQuotes.data(using: .utf8) else {
+                    continue
+                }
+                do {
+                    guard let dictionary = try JSONSerialization.jsonObject(with: data, options: []) as? [String: String] else {
+                        continue
+                    }
+                    result.append(dictionary)
+                } catch {
+                    print("Failed to deserialize line as JSON: \(line)")
+                }
+            }
+            completion(result)
+        }
+    }
+    
+    // 分支：获取本地所有分支
+    static func getRemoteBranchListAsync(at LocalRepoDir: String, completion: @escaping ([Dictionary<String, Any>]) -> Void)  {
+        var result = [Dictionary<String, String>]()
+        
+        let formatForRemote = "--format='{\"name\": \"%(refname:short)\",\"hash\":\"%(objectname)\",\"authorname\":\" %(authorname)\",\"authoremail\":\" %(authoremail) \",\"committername\":\"%(committername)\",\"committeremail\":\" %(committeremail)\",\"subject\":\" %(subject)\", \"type\": \"remote\"}'"
+        let cmd: [String] = ["branch", "-r", "-vv" , formatForRemote]
+        runGit.executeGitAsync(at: LocalRepoDir, command: cmd) { output in
+            guard let output = output else {
+                completion(result)
+                return
+            }
+            let lines = output.split(separator: "\n")
+            for line in lines {
+                let lineWithoutQuotes = line.replacingOccurrences(of: "\'", with: "")
+                guard let data = lineWithoutQuotes.data(using: .utf8) else {
+                    continue
+                }
+                do {
+                    guard let dictionary = try JSONSerialization.jsonObject(with: data, options: []) as? [String: String] else {
+                        continue
+                    }
+                    if dictionary["name"] != "origin/HEAD" {
+                        result.append(dictionary)
+                    }
+                } catch {
+                    print("Failed to deserialize line as JSON: \(line)")
+                }
+            }
+            print(result)
+            completion(result)
+        }
+    }
+    
     // 分支切换
     static func switchBranch(at LocalRepoDir: String, at branchname: String) -> Bool {
         var result: Bool = false
