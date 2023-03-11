@@ -75,8 +75,23 @@ struct GitHiveApp: App {
                         startMonitoringGit()
                     }
                 }
-                .onChange(of: gitMoitor) { gitMoitor in
-                    updateGitObservable(gitMoitor: gitMoitor)
+                .onChange(of: gitMoitor.monitoring_git_HEAD) { value in
+                    appDelegate.gitObservable.monitoring_git_HEAD = value
+                }
+                .onChange(of: gitMoitor.monitoring_git_index) { value in
+                    appDelegate.gitObservable.monitoring_git_index = value
+                }
+                .onChange(of: gitMoitor.monitoring_git_push) { value in
+                    appDelegate.gitObservable.monitoring_git_push = value
+                }
+                .onChange(of: gitMoitor.monitoring_git_pull) { value in
+                    appDelegate.gitObservable.monitoring_git_pull = value
+                }
+                .onChange(of: gitMoitor.monitoring_git_ci) { value in
+                    appDelegate.gitObservable.monitoring_git_ci = value
+                }
+                .onChange(of: gitMoitor.monitoring_project_file) { value in
+                    appDelegate.gitObservable.monitoring_project_file = value
                 }
         }
         .commands {
@@ -95,7 +110,7 @@ struct GitHiveApp: App {
     // 启动监听
     func startMonitoringGit() {
         gitMoitor.stopObserving()
-        DispatchQueue.main.asyncAfter(deadline: .now() + 5) {
+        DispatchQueue.main.asyncAfter(deadline: .now() + 4) {
             let projectPath = appDelegate.gitObservable.GitProjectPathProperty
             if !projectPath.isEmpty {
                 print("[启动.git监听]", projectPath)
@@ -104,16 +119,4 @@ struct GitHiveApp: App {
             }
         }
     }
-    
-    func updateGitObservable(gitMoitor: GitObserverMonitoring) {
-        DispatchQueue.main.async {
-            appDelegate.gitObservable.monitoring_git_HEAD = gitMoitor.monitoring_git_HEAD
-            appDelegate.gitObservable.monitoring_git_index = gitMoitor.monitoring_git_index
-            appDelegate.gitObservable.monitoring_git_push = gitMoitor.monitoring_git_push
-            appDelegate.gitObservable.monitoring_git_pull = gitMoitor.monitoring_git_pull
-            appDelegate.gitObservable.monitoring_git_ci = gitMoitor.monitoring_git_ci
-            appDelegate.gitObservable.monitoring_project_file = gitMoitor.monitoring_project_file
-        }
-    }
-
 }
