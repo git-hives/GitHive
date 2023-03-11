@@ -37,6 +37,9 @@ struct git_files_view: View {
     @State private var gitFilesListForUntracked: [GitStatusItem] = []
     @State private var gitFilesListForUnmerged: [GitStatusItem] = []
     
+    @State private var selectedItem: String = ""
+    @State private var selectedItemPath: String = ""
+    
     @State private var isManuallyTriggerTheExecutionOfGit: Bool = false
     
     var isCommitButtonDisabled: Bool {
@@ -53,8 +56,8 @@ struct git_files_view: View {
             
             ScrollView(.vertical, showsIndicators: true) {
                 view_git_files
+                    .padding(.bottom, 20)
             }
-            .padding(.bottom, 20)
             .font(.callout)
         }
         .onAppear() {
@@ -141,19 +144,19 @@ struct git_files_view: View {
     var view_git_files: some View {
         VStack(alignment: .leading, spacing: 0) {
             // 更改的文件
-            GitShowFilesListView(repoDir: GitRepoLocalPath, gitSection: .Modified, gitFilesList: gitFilesListForModified, refreshAction: { showGitStatusFileList() }, isManually: $isManuallyTriggerTheExecutionOfGit)
+            GitShowFilesListView(repoDir: GitRepoLocalPath, gitSection: .Modified, gitFilesList: gitFilesListForModified, refreshAction: { showGitStatusFileList() }, isManually: $isManuallyTriggerTheExecutionOfGit, selectedItem: $selectedItem, selectedItemPath: $selectedItemPath)
             
             // 暂存的文件
-            GitShowFilesListView(repoDir: GitRepoLocalPath, gitSection: .Staged, gitFilesList: gitFilesListForStated, refreshAction: { showGitStatusFileList() }, isManually: $isManuallyTriggerTheExecutionOfGit)
+            GitShowFilesListView(repoDir: GitRepoLocalPath, gitSection: .Staged, gitFilesList: gitFilesListForStated, refreshAction: { showGitStatusFileList() }, isManually: $isManuallyTriggerTheExecutionOfGit, selectedItem: $selectedItem, selectedItemPath: $selectedItemPath)
             
             // 未跟踪的文件
             if !gitFilesListForUntracked.isEmpty {
-                GitShowFilesListView(repoDir: GitRepoLocalPath, gitSection: .Untracked, gitFilesList: gitFilesListForUntracked, refreshAction: { showGitStatusFileList() }, isManually: $isManuallyTriggerTheExecutionOfGit)
+                GitShowFilesListView(repoDir: GitRepoLocalPath, gitSection: .Untracked, gitFilesList: gitFilesListForUntracked, refreshAction: { showGitStatusFileList() }, isManually: $isManuallyTriggerTheExecutionOfGit, selectedItem: $selectedItem, selectedItemPath: $selectedItemPath)
             }
             
             // 合并更改冲突
             if !gitFilesListForUnmerged.isEmpty {
-                GitShowFilesListView(repoDir: GitRepoLocalPath, gitSection: .Unmerged, gitFilesList: gitFilesListForUnmerged, refreshAction: { showGitStatusFileList() }, isManually: $isManuallyTriggerTheExecutionOfGit)
+                GitShowFilesListView(repoDir: GitRepoLocalPath, gitSection: .Unmerged, gitFilesList: gitFilesListForUnmerged, refreshAction: { showGitStatusFileList() }, isManually: $isManuallyTriggerTheExecutionOfGit, selectedItem: $selectedItem, selectedItemPath: $selectedItemPath)
             }
         }
     }
@@ -203,6 +206,8 @@ struct GitShowFilesListView: View {
     //var action_add: (() -> Void)?
     var refreshAction: () -> Void
     @Binding var isManually: Bool
+    @Binding var selectedItem: String
+    @Binding var selectedItemPath: String
     
     @State var SectionTile: String = ""
     @State var iconFoldStatus: Bool = true
@@ -253,16 +258,19 @@ struct GitShowFilesListView: View {
                 ForEach(gitFilesList, id: \.id) { item in
                     HStack {
                         showGitFilePath(path: item.path, status: item.status)
+                            .background(selectedItem.contains(item.id) ? Color.blue.opacity(0.1) : Color.clear)
                         Spacer()
 
-                        if hoverFileItemId == item.id {
+                        if selectedItem == item.id || hoverFileItemId == item.id {
                             file_item_icon_action_view
                         }
                         showGitFileStatus(status: item.status)
                     }
                     .padding(.horizontal, 10)
                     .frame(height: 24)
+                    .background(selectedItem.contains(item.id) ? Color.blue.opacity(0.95) : Color.clear)
                     .background(hoverFileItemId.contains(item.id) ? Color.gray.opacity(0.1) : Color.clear)
+                    .cornerRadius(3)
                     .onHover { isHovered in
                         hoverFileItemId = isHovered ? item.id : ""
                         hoverFilePath = isHovered ? item.path : ""
@@ -271,12 +279,17 @@ struct GitShowFilesListView: View {
                             hoverFilePath = components.last ?? hoverFilePath
                         }
                     }
+                    .onTapGesture {
+                        selectedItem = item.id
+                        selectedItemPath = item.path
+                    }
                     .contextMenu {
                         contextMenu_fileItem_View
                     }
                 }
             }
         }
+        .padding(.trailing, 7)
     }
     
     var contextMenu_fileItem_View: some View {

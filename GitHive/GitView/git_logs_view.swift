@@ -26,6 +26,7 @@ struct git_logs_view: View {
     
     @State private var selectedItemId: String = ""
     @State private var selectedItem: String = ""
+    
     @State private var hoverItemId: String = ""
     
     var repoPath: String {
@@ -35,11 +36,13 @@ struct git_logs_view: View {
     var body: some View {
         VStack() {
             ScrollView(.vertical, showsIndicators: true) {
-                show_git_log_view
-                    .padding(.vertical, 20)
+                ForEach(gitLogList, id:\.id) { item in
+                    show_log(item: item, selectedItemId: $selectedItemId, hoverItemId: $hoverItemId)
+                }
+                .padding(.vertical, 20)
+                .padding(.trailing, 7)
             }
         }
-        .padding(.leading, -8)
         .onAppear() {
             DispatchQueue.main.asyncAfter(deadline: .now() + 0.2) {
                 getGitLogList(repoPath: repoPath, dataList: $gitLogList)
@@ -55,53 +58,63 @@ struct git_logs_view: View {
             getGitLogList(repoPath: repoPath, dataList: $gitLogList)
         }
     }
-    
-    // 视图：使用Foreach展示log数据
-    var show_git_log_view: some View {
-        ForEach(gitLogList, id:\.id) { item in
-            VStack(alignment: .leading) {
-                Text(item.Message)
-                HStack {
-                    Text(item.Author)
-                    Spacer()
-                    Text(item.DisplayDate)
-                }
-                .font(.callout)
-                .foregroundColor(.gray)
-                .lineLimit(1)
-            }
-            .frame(height: 50)
-            .padding(.horizontal, 10)
-            .background(hoverItemId.contains(item.id) ? Color.gray.opacity(0.1) : Color.clear)
-            .onHover { isHovered in
-                hoverItemId = isHovered ? item.id : ""
-            }
-            .contextMenu {
-                Button("Checkout...", action: {
+}
 
-                })
-                Divider()
-                Button("Create Branch", action: {
-                    
-                })
-                Button("Create Tag", action: {
-                    
-                })
-                Divider()
-                Button("Revert commit", action: {
-                    
-                })
-                Button("Reset to this commit", action: {
-                    
-                })
-                Divider()
-                Button("Copy", action: {
-                    actionCopy(selected: item, copyType: "")
-                })
-                Button("Copy \(item.abbrHash)...", action: {
-                    actionCopy(selected: item, copyType: "hash")
-                })
+struct show_log: View {
+    var item: GitLogItem
+    
+    @Binding var selectedItemId: String
+    @Binding var hoverItemId: String
+    
+    var body: some View {
+        VStack(alignment: .leading) {
+            Text(item.Message)
+                .foregroundColor(selectedItemId == item.CommitHash ? .white : .primary)
+            HStack {
+                Text(item.Author)
+                Spacer()
+                Text(item.DisplayDate)
             }
+            .font(.callout)
+            .foregroundColor(selectedItemId == item.CommitHash ? .white : .gray)
+            .lineLimit(1)
+        }
+        .frame(height: 50)
+        .padding(.horizontal, 10)
+        .background(hoverItemId == item.CommitHash ? Color.gray.opacity(0.1) : Color.clear)
+        .background(selectedItemId == item.CommitHash  ? Color.blue.opacity(0.95) : Color.clear)
+        .cornerRadius(3)
+        .onTapGesture {
+            self.selectedItemId = item.CommitHash
+        }
+        .onHover { isHovered in
+            hoverItemId = isHovered ? item.CommitHash : ""
+        }
+        .contextMenu {
+            Button("Checkout...", action: {
+
+            })
+            Divider()
+            Button("Create Branch", action: {
+                
+            })
+            Button("Create Tag", action: {
+                
+            })
+            Divider()
+            Button("Revert commit", action: {
+                
+            })
+            Button("Reset to this commit", action: {
+                
+            })
+            Divider()
+            Button("Copy", action: {
+                actionCopy(selected: item, copyType: "")
+            })
+            Button("Copy \(item.abbrHash)...", action: {
+                actionCopy(selected: item, copyType: "hash")
+            })
         }
     }
 }
