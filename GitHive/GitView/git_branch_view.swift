@@ -55,7 +55,7 @@ struct git_branch_view: View {
     }
     
     var view_filter: some View {
-        SearchTextField(text: $searchText)
+        SearchTextField(text: $searchText, placeholder: "Filter Branch Name")
             .padding(.vertical, 15)
             .onSubmit {
                 filterBranch()

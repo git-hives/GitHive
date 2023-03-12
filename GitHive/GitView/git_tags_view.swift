@@ -50,7 +50,7 @@ struct git_tags_view: View {
     
     // 视图：过滤
     var view_filter: some View {
-        SearchTextField(text: $searchText)
+        SearchTextField(text: $searchText, placeholder: "Filter Tag Name")
             .padding(.vertical, 15)
             .onSubmit {
                 filterTag()

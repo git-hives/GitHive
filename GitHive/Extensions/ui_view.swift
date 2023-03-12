@@ -81,14 +81,14 @@ struct ActionButtonForSilderNav: View {
 // 搜索类型的输入框
 struct SearchTextField: View {
     @Binding var text: String
-//    @Binding var height: CGFloat
+    var placeholder: String = "Filter"
     
     var body: some View {
         HStack {
             Image(systemName: "magnifyingglass")
                 .padding(.leading, 10)
                 
-            TextField("Filter", text: $text)
+            TextField(placeholder, text: $text)
                 .textFieldStyle(PlainTextFieldStyle())
             
             if !text.isEmpty {
