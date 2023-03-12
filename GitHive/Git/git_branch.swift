@@ -7,6 +7,28 @@
 
 import Foundation
 
+// 目前用于工具栏分支下拉列表
+struct GitBranchItem: Identifiable {
+    let id = UUID().uuidString
+    let name: String
+    let reftype: String
+    let refname: String
+//    let subject: String
+    let authordate: String
+    let author: String
+}
+
+// 用于分支视图
+struct gitBranchItem2: Identifiable {
+    let id = UUID().uuidString
+    let name: String
+    let hash: String
+    let authorname: String
+    let authoremail: String
+    let subject: String
+    let type: String
+}
+
 
 class GitBranchHelper: runGit {
     
@@ -24,6 +46,7 @@ class GitBranchHelper: runGit {
         }
     }
     
+    // 获取当前分支名称
     static func getCurrentBranchNameAsync(at LocalRepoDir: String, completion: @escaping (String) -> Void) {
         var result: String = ""
         let cmd: [String] = ["branch", "-l", "--format='%(HEAD)%(refname:short):%(objectname:short)'"]
@@ -175,7 +198,7 @@ class GitBranchHelper: runGit {
                         dictionary["reftype"] = tmp[0]
                         dictionary["name"] = tmp[1]
                     }
-                    if dictionary["refname"] != "refs/remotes/origin/HEAD" {
+                    if dictionary["refname"] != "refs/remotes/origin/HEAD" && dictionary["refname"] != "refs/stash" {
                         dicts.append(dictionary)
                     }
                 } catch {

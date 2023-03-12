@@ -7,16 +7,6 @@
 
 import SwiftUI
 
-struct gitBranchItem2: Identifiable {
-    let id = UUID().uuidString
-    let name: String
-    let hash: String
-    let authorname: String
-    let authoremail: String
-    let subject: String
-    let type: String
-}
-
 struct git_branch_view: View {
     @EnvironmentObject var GitObservable: GitObservable
     
