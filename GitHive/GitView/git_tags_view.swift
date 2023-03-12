@@ -112,7 +112,7 @@ struct git_tags_view: View {
 }
 
 // 视图：tag
-struct show_tag: View {
+private struct show_tag: View {
     var item: gitTagItem
     
     @Binding var selectedItemId: String

@@ -163,7 +163,7 @@ struct git_branch_view: View {
 }
 
 // 视图：分支
-struct show_branch: View {
+private struct show_branch: View {
     var item: gitBranchItem2
     
     @Binding var selectedItemId: String
@@ -215,7 +215,7 @@ struct show_branch: View {
 
 
 // 视图：段落标题
-struct GitBranchSectionTitleDisplayAndOperation: View {
+private struct GitBranchSectionTitleDisplayAndOperation: View {
     var iconStatus: Bool
     var title: String
     let action: () -> Void

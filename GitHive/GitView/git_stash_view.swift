@@ -112,7 +112,7 @@ struct git_stash_view: View {
 }
 
 // 视图：stash
-struct show_stash: View {
+private struct show_stash: View {
     var item: gitStashItem
     
     @Binding var selectedItemId: String
