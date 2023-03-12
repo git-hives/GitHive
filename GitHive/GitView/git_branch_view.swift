@@ -12,6 +12,8 @@ struct git_branch_view: View {
     
     @State private var LocalBranchList: [gitBranchItem2] = []
     @State private var remoteBranchList: [gitBranchItem2] = []
+    @State private var rawLocalBranchList: [gitBranchItem2] = []
+    @State private var rawRemoteBranchList: [gitBranchItem2] = []
     
     @State private var searchText: String = ""
     
@@ -38,17 +40,17 @@ struct git_branch_view: View {
         }
         .onAppear() {
             DispatchQueue.main.asyncAfter(deadline: .now() + 0.2) {
-                getGitAllBranchList(repoPath: repoPath, local: $LocalBranchList, remote: $remoteBranchList)
+                getGitAllBranchList(repoPath: repoPath)
             }
             
         }
         .onChange(of: repoPath) { newValue in
             DispatchQueue.main.asyncAfter(deadline: .now() + 1) {
-                getGitAllBranchList(repoPath: repoPath, local: $LocalBranchList, remote: $remoteBranchList)
+                getGitAllBranchList(repoPath: repoPath)
             }
         }
         .onChange(of: GitObservable.GitBranchProperty) { value in
-            getGitAllBranchList(repoPath: repoPath, local: $LocalBranchList, remote: $remoteBranchList)
+            getGitAllBranchList(repoPath: repoPath)
         }
     }
     
@@ -101,9 +103,62 @@ struct git_branch_view: View {
         .padding(.trailing, 7)
     }
     
+    // 分支列表：获取git 分支列表
+    func getGitAllBranchList(repoPath: String) {
+        if repoPath.isEmpty {
+            return
+        }
+        
+        // 获取本地分支
+        var localList: [gitBranchItem2] = []
+        GitBranchHelper.getLocalBranchListAsync(at: repoPath) { output in
+            if let bList = output as? [Dictionary<String, String>] {
+                for i in bList {
+                    localList.append(gitBranchItem2(name: i["name"]!, hash: i["hash"]!, authorname: i["authorname"]!, authoremail: i["authoremail"]!, subject: i["subject"]!, type: i["type"]!))
+                }
+            }
+            if !localList.isEmpty {
+                DispatchQueue.main.async {
+                    self.LocalBranchList = localList
+                    self.rawLocalBranchList = localList
+                }
+            }
+        }
+        
+        // 获取远程分支
+        var remoteList: [gitBranchItem2] = []
+        GitBranchHelper.getRemoteBranchListAsync(at: repoPath) { output in
+            if let bList = output as? [Dictionary<String, String>] {
+                for i in bList {
+                    remoteList.append(gitBranchItem2(name: i["name"]!, hash: i["hash"]!, authorname: i["authorname"]!, authoremail: i["authoremail"]!, subject: i["subject"]!, type: i["type"]!))
+                }
+            }
+            if !remoteList.isEmpty {
+                DispatchQueue.main.async {
+                    self.remoteBranchList = remoteList
+                    self.rawRemoteBranchList = remoteList
+                }
+            }
+        }
+    }
+    
     // 过滤分支
     func filterBranch() {
+        let fileterText = self.searchText.trimming()
         
+        self.LocalBranchList = self.rawLocalBranchList
+        self.remoteBranchList = self.rawRemoteBranchList
+        
+        if fileterText.isEmpty {
+            return
+        }
+        self.LocalBranchList = self.rawLocalBranchList.filter {
+            $0.name.contains(fileterText)
+        }
+        
+        self.remoteBranchList = self.rawRemoteBranchList.filter {
+            $0.name.contains(fileterText)
+        }
     }
 }
 
@@ -177,43 +232,6 @@ struct GitBranchSectionTitleDisplayAndOperation: View {
                 .fontWeight(.medium)
         }
         .buttonStyle(PlainButtonStyle())
-    }
-}
-
-// 分支列表：获取git 分支列表
-fileprivate func getGitAllBranchList(repoPath: String, local: Binding<[gitBranchItem2]>, remote: Binding<[gitBranchItem2]>) {
-    if repoPath.isEmpty {
-        return
-    }
-    
-    // 获取本地分支
-    var localList: [gitBranchItem2] = []
-    GitBranchHelper.getLocalBranchListAsync(at: repoPath) { output in
-        if let bList = output as? [Dictionary<String, String>] {
-            for i in bList {
-                localList.append(gitBranchItem2(name: i["name"]!, hash: i["hash"]!, authorname: i["authorname"]!, authoremail: i["authoremail"]!, subject: i["subject"]!, type: i["type"]!))
-            }
-        }
-        if !localList.isEmpty {
-            DispatchQueue.main.async {
-                local.wrappedValue = localList
-            }
-        }
-    }
-    
-    // 获取远程分支
-    var remoteList: [gitBranchItem2] = []
-    GitBranchHelper.getRemoteBranchListAsync(at: repoPath) { output in
-        if let bList = output as? [Dictionary<String, String>] {
-            for i in bList {
-                remoteList.append(gitBranchItem2(name: i["name"]!, hash: i["hash"]!, authorname: i["authorname"]!, authoremail: i["authoremail"]!, subject: i["subject"]!, type: i["type"]!))
-            }
-        }
-        if !remoteList.isEmpty {
-            DispatchQueue.main.async {
-                remote.wrappedValue = remoteList
-            }
-        }
     }
 }
 
