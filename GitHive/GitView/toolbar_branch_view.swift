@@ -62,7 +62,7 @@ struct toolbar_branch_view: View {
         .padding(.trailing, 20)
         .frame(width: 170, alignment: .trailing)
         .sheet(isPresented: $showCreateBranchWindow) {
-            git_branch_create_view(projectPath: projectPath,refsList: rawBranchList, userSelectedRef: userSelectedRef, isShowWindow: $showCreateBranchWindow)
+            git_branch_create_view(projectPath: projectPath, userSelectedRef: userSelectedRef, isShowWindow: $showCreateBranchWindow)
         }
         .onAppear() {
             getCurrentBranchName()

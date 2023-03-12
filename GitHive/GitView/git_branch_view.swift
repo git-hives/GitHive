@@ -17,7 +17,6 @@ struct git_branch_view: View {
     
     @State private var searchText: String = ""
     
-    @State private var selectedBranchName: String = ""
     @State private var selectedItemId: String = ""
     @State private var selectedItem: String = ""
     
@@ -25,8 +24,6 @@ struct git_branch_view: View {
     
     @State var iconFoldLocal: Bool = false
     @State var iconFoldRemote: Bool = false
-    
-    @State private var showCreateBranchWindow: Bool = false
     
     var repoPath: String {
         GitObservable.GitProjectPathProperty
@@ -40,10 +37,6 @@ struct git_branch_view: View {
                 view_local_branch
                 view_remote_branch
             }
-        }
-        .sheet(isPresented: $showCreateBranchWindow) {
-            let refsList = rawLocalBranchList + rawRemoteBranchList
-//            git_branch_create_view(projectPath: repoPath, refsList: refsList, userSelectedRef: selectedBranchName, isShowWindow: $showCreateBranchWindow)
         }
         .onAppear() {
             DispatchQueue.main.asyncAfter(deadline: .now() + 0.2) {
@@ -72,6 +65,7 @@ struct git_branch_view: View {
             }
     }
     
+    // 视图：本地分支
     var view_local_branch: some View {
         Section {
             HStack {
@@ -91,6 +85,7 @@ struct git_branch_view: View {
         .padding(.trailing, 7)
     }
     
+    // 视图: 远程分支
     var view_remote_branch: some View {
         Section {
             HStack {
@@ -177,6 +172,9 @@ private struct show_branch: View {
     @Binding var selectedItemId: String
     @Binding var hoverItemId: String
     
+    @State private var showCreateBranchWindow: Bool = false
+    @State private var selectedBranchName: String = ""
+    
     var body: some View {
         VStack(alignment: .leading) {
             HStack {
@@ -197,6 +195,11 @@ private struct show_branch: View {
             hoverItemId = isHovered ? item.id : ""
         }
         .contextMenu {
+            Button("Create Branch", action: {
+                self.showCreateBranchWindow = true
+                self.selectedBranchName = item.name
+            })
+            Divider()
             Button("Checkout \(item.name)", action: {
 
             })
@@ -217,6 +220,9 @@ private struct show_branch: View {
             Button("Copy Branch Name to Clipboard", action: {
                 
             })
+        }
+        .sheet(isPresented: $showCreateBranchWindow) {
+            git_branch_create_view(projectPath: repoPath, userSelectedRef: selectedBranchName, isShowWindow: $showCreateBranchWindow)
         }
     }
 }

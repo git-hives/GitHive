@@ -7,14 +7,18 @@
 
 import SwiftUI
 
+struct refItem: Identifiable {
+    let id = UUID().uuidString
+    let name: String
+}
+
 struct git_branch_create_view: View {
     
     var projectPath: String
-    var refsList: [GitBranchItem]
     var userSelectedRef: String
     @Binding var isShowWindow: Bool
     
-    @State private var dataList: [String] = []
+    @State private var refsList: [refItem] = []
     @State private var selectedRef: String = ""
     @State private var selectedOptionIndex: String = ""
     
@@ -78,10 +82,29 @@ struct git_branch_create_view: View {
         .cornerRadius(20)
         .background(.gray.opacity(0.05))
         .onAppear() {
-            for i in self.refsList {
-                self.dataList.append(i.name)
-                if i.name == userSelectedRef {
-                    self.selectedOptionIndex = i.id
+            getGitRefsList()
+        }
+    }
+    
+    // 分支：获取所有的分支、tags
+    func getGitRefsList() {
+        var tmpList: [refItem] = []
+        var selectedOptionIndex: String = ""
+        GitBranchHelper.getAllRefs(at: projectPath) { output in
+            if !output.isEmpty {
+                if let bList = output as? [Dictionary<String, String>] {
+                    tmpList = bList.map { refItem(name:$0["name"]!) }
+                    for i in tmpList {
+                        if i.name == userSelectedRef {
+                            selectedOptionIndex = i.id
+                        }
+                    }
+                }
+            }
+            if !tmpList.isEmpty {
+                DispatchQueue.main.async {
+                    self.refsList = tmpList
+                    self.selectedOptionIndex = selectedOptionIndex
                 }
             }
         }

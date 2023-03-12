@@ -65,7 +65,7 @@ struct git_tags_view: View {
         Section {
             if !iconFoldLocal {
                 ForEach(tagsList, id:\.id) { item in
-                    show_tag(item: item, selectedItemId: $selectedItemId, hoverItemId: $hoverItemId)
+                    show_tag(repoPath: repoPath, item: item, selectedItemId: $selectedItemId, hoverItemId: $hoverItemId)
                 }
             }
         }
@@ -113,10 +113,14 @@ struct git_tags_view: View {
 
 // 视图：tag
 private struct show_tag: View {
+    var repoPath: String
     var item: gitTagItem
     
     @Binding var selectedItemId: String
     @Binding var hoverItemId: String
+    
+    @State private var showCreateBranchWindow: Bool = false
+    @State private var selectedBranchName: String = ""
     
     var body: some View {
         VStack(alignment: .leading) {
@@ -142,6 +146,11 @@ private struct show_tag: View {
                 
             })
             Divider()
+            Button("Create Branch", action: {
+                self.showCreateBranchWindow = true
+                self.selectedBranchName = "tags/\(item.name)"
+            })
+            Divider()
             Button("Checkout \(item.name)", action: {
 
             })
@@ -149,17 +158,22 @@ private struct show_tag: View {
             Button("Push \(item.name)", action: {
 
             })
-            Divider()
-            Button("Delete \(item.name)", action: {
+            Group {
+                Divider()
+                Button("Delete \(item.name)", action: {
 
-            })
-            Button("Delete \(item.name) from origin", action: {
+                })
+                Button("Delete \(item.name) from origin", action: {
 
-            })
-            Divider()
+                })
+                Divider()
+            }
             Button("Copy Tag Name to Clipboard", action: {
 
             })
+        }
+        .sheet(isPresented: $showCreateBranchWindow) {
+            git_branch_create_view(projectPath: repoPath, userSelectedRef: selectedBranchName, isShowWindow: $showCreateBranchWindow)
         }
     }
 }
