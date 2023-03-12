@@ -91,7 +91,7 @@ struct toolbar_branch_view: View {
                         Text(item.reftype).foregroundColor(item.reftype == "L" ? .blue.opacity(0.8) : .purple.opacity(0.8))
                         VStack(alignment: .leading) {
                             Text(item.name).lineLimit(1)
-                            Text("\(item.author)  \(item.authordate)").lineLimit(1).font(.system(size: 10, weight: .light)).foregroundColor(.gray)
+                            Text("\(item.authorname)  \(item.authordate)").lineLimit(1).font(.system(size: 10, weight: .light)).foregroundColor(.gray)
                         }
                         Spacer()
                         if hoverItem == item.id {
@@ -174,7 +174,7 @@ struct toolbar_branch_view: View {
                 if !output.isEmpty {
                     if let bList = output as? [Dictionary<String, String>] {
                         for i in bList {
-                            tmpBranchList.append(GitBranchItem(name: i["name"]!, reftype: i["reftype"]!, refname: i["refname"]!, authordate: i["authordate"]!, author: i["author"]!))
+                            tmpBranchList.append(GitBranchItem(name: i["name"]!, reftype: i["reftype"]!, refname: i["refname"]!, authordate: i["authordate"]!, authorname: i["authorname"]!))
                         }
                     }
                 }

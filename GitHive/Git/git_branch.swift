@@ -15,18 +15,18 @@ struct GitBranchItem: Identifiable {
     let refname: String
 //    let subject: String
     let authordate: String
-    let author: String
+    let authorname: String
 }
 
 // 用于分支视图
 struct gitBranchItem2: Identifiable {
     let id = UUID().uuidString
     let name: String
-    let hash: String
+    let objectname: String
     let authorname: String
     let authoremail: String
     let subject: String
-    let type: String
+    let reftype: String
 }
 
 
@@ -78,7 +78,7 @@ class GitBranchHelper: runGit {
     static func getLocalBranchListAsync(at LocalRepoDir: String, completion: @escaping ([Dictionary<String, Any>]) -> Void)  {
         var result = [Dictionary<String, String>]()
         
-        let formatForLocal = "--format='{\"name\": \"%(refname:short)\",\"hash\":\"%(objectname)\",\"authorname\":\" %(authorname)\",\"authoremail\":\" %(authoremail) \",\"committername\":\"%(committername)\",\"committeremail\":\" %(committeremail)\",\"subject\":\" %(subject)\", \"type\": \"local\"}'"
+        let formatForLocal = "--format='{\"name\": \"%(refname:short)\",\"objectname\":\"%(objectname)\",\"authorname\":\" %(authorname)\",\"authoremail\":\" %(authoremail) \",\"committername\":\"%(committername)\",\"committeremail\":\" %(committeremail)\",\"subject\":\" %(subject)\", \"reftype\": \"local\"}'"
         let cmd: [String] = ["branch", "-l", "-vv" ,formatForLocal]
         runGit.executeGitAsync(at: LocalRepoDir, command: cmd) { output in
             guard let output = output else {
@@ -108,7 +108,7 @@ class GitBranchHelper: runGit {
     static func getRemoteBranchListAsync(at LocalRepoDir: String, completion: @escaping ([Dictionary<String, Any>]) -> Void)  {
         var result = [Dictionary<String, String>]()
         
-        let formatForRemote = "--format='{\"name\": \"%(refname:short)\",\"hash\":\"%(objectname)\",\"authorname\":\" %(authorname)\",\"authoremail\":\" %(authoremail) \",\"committername\":\"%(committername)\",\"committeremail\":\" %(committeremail)\",\"subject\":\" %(subject)\", \"type\": \"remote\"}'"
+        let formatForRemote = "--format='{\"name\": \"%(refname:short)\",\"objectname\":\"%(objectname)\",\"authorname\":\" %(authorname)\",\"authoremail\":\" %(authoremail) \",\"committername\":\"%(committername)\",\"committeremail\":\" %(committeremail)\",\"subject\":\" %(subject)\", \"reftype\": \"remote\"}'"
         let cmd: [String] = ["branch", "-r", "-vv" , formatForRemote]
         runGit.executeGitAsync(at: LocalRepoDir, command: cmd) { output in
             guard let output = output else {
@@ -132,7 +132,6 @@ class GitBranchHelper: runGit {
                     print("Failed to deserialize line as JSON: \(line)")
                 }
             }
-            print(result)
             completion(result)
         }
     }
@@ -172,7 +171,7 @@ class GitBranchHelper: runGit {
     // 分支：获取的本地、远程分支、以及tags
     static func getAllRefs(at LocalRepoDir: String, completion: @escaping ([Dictionary<String, Any>]) -> Void) {
         var dicts = [Dictionary<String, String>]()
-        let cmd: [String] = ["for-each-ref", "--format='{\"refname\":\"%(refname)\",\"objectname\":\"%(objectname)\",\"authordate\":\"%(authordate:local)\",\"author\":\"%(authorname)\",\"subject\":\"%(subject)\"}'"
+        let cmd: [String] = ["for-each-ref", "--format='{\"refname\":\"%(refname)\",\"objectname\":\"%(objectname)\",\"authordate\":\"%(authordate:local)\",\"authorname\":\"%(authorname)\",\"subject\":\"%(subject)\"}'"
         ]
         
         runGit.executeGitAsync(at: LocalRepoDir, command: cmd) { output in

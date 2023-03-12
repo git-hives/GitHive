@@ -17,6 +17,7 @@ struct git_branch_view: View {
     
     @State private var searchText: String = ""
     
+    @State private var selectedBranchName: String = ""
     @State private var selectedItemId: String = ""
     @State private var selectedItem: String = ""
     
@@ -24,6 +25,8 @@ struct git_branch_view: View {
     
     @State var iconFoldLocal: Bool = false
     @State var iconFoldRemote: Bool = false
+    
+    @State private var showCreateBranchWindow: Bool = false
     
     var repoPath: String {
         GitObservable.GitProjectPathProperty
@@ -37,6 +40,10 @@ struct git_branch_view: View {
                 view_local_branch
                 view_remote_branch
             }
+        }
+        .sheet(isPresented: $showCreateBranchWindow) {
+            let refsList = rawLocalBranchList + rawRemoteBranchList
+//            git_branch_create_view(projectPath: repoPath, refsList: refsList, userSelectedRef: selectedBranchName, isShowWindow: $showCreateBranchWindow)
         }
         .onAppear() {
             DispatchQueue.main.asyncAfter(deadline: .now() + 0.2) {
@@ -77,7 +84,7 @@ struct git_branch_view: View {
             
             if !iconFoldLocal {
                 ForEach(LocalBranchList, id:\.id) { item in
-                    show_branch(item: item, selectedItemId: $selectedItemId, hoverItemId: $hoverItemId)
+                    show_branch(repoPath: repoPath, item: item, selectedItemId: $selectedItemId, hoverItemId: $hoverItemId)
                 }
             }
         }
@@ -96,7 +103,7 @@ struct git_branch_view: View {
             
             if !iconFoldRemote {
                 ForEach(remoteBranchList, id:\.id) { item in
-                    show_branch(item: item, selectedItemId: $selectedItemId, hoverItemId: $hoverItemId)
+                    show_branch(repoPath: repoPath, item: item, selectedItemId: $selectedItemId, hoverItemId: $hoverItemId)
                 }
             }
         }
@@ -114,7 +121,7 @@ struct git_branch_view: View {
         GitBranchHelper.getLocalBranchListAsync(at: repoPath) { output in
             if let bList = output as? [Dictionary<String, String>] {
                 for i in bList {
-                    localList.append(gitBranchItem2(name: i["name"]!, hash: i["hash"]!, authorname: i["authorname"]!, authoremail: i["authoremail"]!, subject: i["subject"]!, type: i["type"]!))
+                    localList.append(gitBranchItem2(name: i["name"]!, objectname: i["objectname"]!, authorname: i["authorname"]!, authoremail: i["authoremail"]!, subject: i["subject"]!, reftype: i["reftype"]!))
                 }
             }
             if !localList.isEmpty {
@@ -130,7 +137,7 @@ struct git_branch_view: View {
         GitBranchHelper.getRemoteBranchListAsync(at: repoPath) { output in
             if let bList = output as? [Dictionary<String, String>] {
                 for i in bList {
-                    remoteList.append(gitBranchItem2(name: i["name"]!, hash: i["hash"]!, authorname: i["authorname"]!, authoremail: i["authoremail"]!, subject: i["subject"]!, type: i["type"]!))
+                    remoteList.append(gitBranchItem2(name: i["name"]!, objectname: i["objectname"]!, authorname: i["authorname"]!, authoremail: i["authoremail"]!, subject: i["subject"]!, reftype: i["reftype"]!))
                 }
             }
             if !remoteList.isEmpty {
@@ -164,6 +171,7 @@ struct git_branch_view: View {
 
 // 视图：分支
 private struct show_branch: View {
+    var repoPath: String
     var item: gitBranchItem2
     
     @Binding var selectedItemId: String
@@ -197,7 +205,7 @@ private struct show_branch: View {
                 
             })
             Divider()
-            if item.type == "local" {
+            if item.reftype == "local" {
                 Button("Rename...", action: {
                     
                 })
