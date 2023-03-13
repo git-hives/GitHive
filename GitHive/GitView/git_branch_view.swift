@@ -213,10 +213,12 @@ private struct show_branch: View {
             hoverItemId = isHovered ? item.id : ""
         }
         .contextMenu {
-            Button("Switch Branch to \(item.name)", action: {
-                self.selectedItemId = item.id
-                _ = GitBranchHelper.BranchSwitch(LocalRepoDir: repoPath, name: item.name)
-            })
+            if item.reftype == "local" {
+                Button("Switch Branch to \(item.name)", action: {
+                    self.selectedItemId = item.id
+                    _ = GitBranchHelper.BranchSwitch(LocalRepoDir: repoPath, name: item.name)
+                })
+            }
             Divider()
             Button("Create Branch", action: {
                 self.selectedItemId = item.id
