@@ -29,6 +29,10 @@ struct git_branch_view: View {
         GitObservable.GitProjectPathProperty
     }
     
+    var currentBranch: String {
+        GitObservable.GitBranchProperty
+    }
+    
     var body: some View {
         VStack() {
             view_filter
@@ -81,7 +85,7 @@ struct git_branch_view: View {
             
             if !iconFoldLocal {
                 ForEach(LocalBranchList, id:\.id) { item in
-                    show_branch(repoPath: repoPath, item: item, selectedItemId: $selectedItemId, hoverItemId: $hoverItemId, refreshAction: { getGitAllBranchList(repoPath: repoPath) })
+                    show_branch(repoPath: repoPath, item: item, currentBranch: currentBranch, selectedItemId: $selectedItemId, hoverItemId: $hoverItemId, refreshAction: { getGitAllBranchList(repoPath: repoPath) })
                 }
             }
         }
@@ -101,7 +105,7 @@ struct git_branch_view: View {
             
             if !iconFoldRemote {
                 ForEach(remoteBranchList, id:\.id) { item in
-                    show_branch(repoPath: repoPath, item: item, selectedItemId: $selectedItemId, hoverItemId: $hoverItemId, refreshAction: { getGitAllBranchList(repoPath: repoPath) })
+                    show_branch(repoPath: repoPath, item: item, currentBranch: currentBranch, selectedItemId: $selectedItemId, hoverItemId: $hoverItemId, refreshAction: { getGitAllBranchList(repoPath: repoPath) })
                 }
             }
         }
@@ -171,6 +175,7 @@ struct git_branch_view: View {
 private struct show_branch: View {
     var repoPath: String
     var item: gitBranchItem2
+    var currentBranch: String
     
     @Binding var selectedItemId: String
     @Binding var hoverItemId: String
@@ -184,8 +189,15 @@ private struct show_branch: View {
     var body: some View {
         VStack(alignment: .leading) {
             HStack {
-                Text(item.name)
-                    .foregroundColor(selectedItemId == item.id ? .white : .primary)
+                if currentBranch == item.name {
+                    Text("* \(item.name)")
+                        .foregroundColor(selectedItemId == item.id ? .white : .primary)
+                        .fontWeight(.bold)
+                } else {
+                    Text(item.name)
+                        .foregroundColor(selectedItemId == item.id ? .white : .primary)
+                }
+                
                 Spacer()
             }
         }
@@ -201,15 +213,15 @@ private struct show_branch: View {
             hoverItemId = isHovered ? item.id : ""
         }
         .contextMenu {
+            Button("Switch Branch to \(item.name)", action: {
+                self.selectedItemId = item.id
+                _ = GitBranchHelper.BranchSwitch(LocalRepoDir: repoPath, name: item.name)
+            })
+            Divider()
             Button("Create Branch", action: {
                 self.selectedItemId = item.id
                 self.showCreateBranchWindow = true
                 self.selectedBranchName = item.name
-            })
-            Divider()
-            Button("Switch Branch to \(item.name)", action: {
-                self.selectedItemId = item.id
-                _ = GitBranchHelper.BranchSwitch(LocalRepoDir: repoPath, name: item.name)
             })
             Divider()
             Button("Merge \(item.name) into xxx", action: {

@@ -87,6 +87,7 @@ class GitBranchHelper: runGit {
             }
             let lines = output.split(separator: "\n")
             for line in lines {
+                print(line)
                 let lineWithoutQuotes = line.replacingOccurrences(of: "\'", with: "")
                 guard let data = lineWithoutQuotes.data(using: .utf8) else {
                     continue
@@ -104,7 +105,7 @@ class GitBranchHelper: runGit {
         }
     }
     
-    // 分支：获取本地所有分支
+    // 分支：获取远程所有分支
     static func getRemoteBranchListAsync(at LocalRepoDir: String, completion: @escaping ([Dictionary<String, Any>]) -> Void)  {
         var result = [Dictionary<String, String>]()
         
