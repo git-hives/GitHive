@@ -250,5 +250,23 @@ class GitBranchHelper: runGit {
         }
     }
     
+    // 分支：重命名
+    static func BranchRename(LocalRepoDir: String, cmd: [String], completion: @escaping (Bool) -> Void) {
+        runGit.executeGitAsync(at: LocalRepoDir, command: cmd) { output in
+            guard let output = output else {
+                completion(false)
+                return
+            }
+            let lines = output.replacingOccurrences(of: "\n", with: "")
+            print("Git分支重命名结果: ", output)
+            if lines.isEmpty {
+                completion(true)
+            } else {
+                _ = showAlertOnlyPrompt(msgType: "warning", title: "", msg: lines, ConfirmBtnText: "OK")
+                completion(false)
+            }
+        }
+    }
+    
     
 }

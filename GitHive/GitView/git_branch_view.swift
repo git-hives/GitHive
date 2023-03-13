@@ -177,6 +177,8 @@ private struct show_branch: View {
     var refreshAction: () -> Void
     
     @State private var showCreateBranchWindow: Bool = false
+    @State private var showRenameBranchWindow: Bool = false
+    
     @State private var selectedBranchName: String = ""
     
     var body: some View {
@@ -200,6 +202,7 @@ private struct show_branch: View {
         }
         .contextMenu {
             Button("Create Branch", action: {
+                self.selectedItemId = item.id
                 self.showCreateBranchWindow = true
                 self.selectedBranchName = item.name
             })
@@ -214,7 +217,8 @@ private struct show_branch: View {
             Divider()
             if item.reftype == "local" {
                 Button("Rename...", action: {
-                    
+                    self.selectedItemId = item.id
+                    self.showRenameBranchWindow = true
                 })
                 Button("Delete \(item.name)", action: {
                     self.selectedItemId = item.id
@@ -235,6 +239,13 @@ private struct show_branch: View {
         .sheet(isPresented: $showCreateBranchWindow) {
             git_branch_create_view(projectPath: repoPath, userSelectedRef: selectedBranchName, isShowWindow: $showCreateBranchWindow)
         }
+        .sheet(isPresented: $showRenameBranchWindow) {
+            ui_alert_with_inputbox(isPresented: $showRenameBranchWindow, title: "Branch Rename", placeholder: "New Branch Name", onConfirm: { value in
+                if !value.isEmpty {
+                    branchRename(source: item.name, target: value)
+                }
+            })
+        }
     }
     
     // 删除本地分支
@@ -244,6 +255,16 @@ private struct show_branch: View {
             return
         }
         GitBranchHelper.BranchDelete(LocalRepoDir: repoPath, name: name, DeleteType: DeleteType) { output in
+            if output != nil {
+                refreshAction()
+            }
+        }
+    }
+    
+    // 重命名本地分支
+    func branchRename(source: String, target: String) {
+        let cmd = ["branch", "-m", source, target]
+        GitBranchHelper.BranchRename(LocalRepoDir: repoPath, cmd: cmd) { output in
             if output != nil {
                 refreshAction()
             }

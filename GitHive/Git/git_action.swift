@@ -233,7 +233,7 @@ class GitAction: runGit {
         }
         
         runGit.executeGitAsync(at: LocalRepoDir, command: fetchCmd) { output in
-            guard var output = output else {
+            guard let output = output else {
                 return completion(nil)
             }
             //print("git fetch命令运行结果:", output)
