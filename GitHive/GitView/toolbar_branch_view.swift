@@ -210,7 +210,7 @@ struct toolbar_branch_view: View {
                 return
             }
             
-            let result = GitBranchHelper.switchBranch(at: projectPath, at: name)
+            let result = GitBranchHelper.BranchSwitch(LocalRepoDir: projectPath, name: name)
             if result {
                 DispatchQueue.main.async {
                     self.branchName = name

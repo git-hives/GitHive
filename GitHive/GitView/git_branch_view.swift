@@ -207,12 +207,13 @@ private struct show_branch: View {
                 self.selectedBranchName = item.name
             })
             Divider()
-            Button("Checkout \(item.name)", action: {
-
+            Button("Switch Branch to \(item.name)", action: {
+                self.selectedItemId = item.id
+                _ = GitBranchHelper.BranchSwitch(LocalRepoDir: repoPath, name: item.name)
             })
             Divider()
             Button("Merge \(item.name) into xxx", action: {
-                
+                self.selectedItemId = item.id
             })
             Divider()
             if item.reftype == "local" {
@@ -233,7 +234,8 @@ private struct show_branch: View {
             }
             Divider()
             Button("Copy Branch Name to Clipboard", action: {
-                
+                self.selectedItemId = item.id
+                copyToPasteboard(at: item.name)
             })
         }
         .sheet(isPresented: $showCreateBranchWindow) {
@@ -255,7 +257,7 @@ private struct show_branch: View {
             return
         }
         GitBranchHelper.BranchDelete(LocalRepoDir: repoPath, name: name, DeleteType: DeleteType) { output in
-            if output != nil {
+            if output == true {
                 refreshAction()
             }
         }
@@ -265,7 +267,7 @@ private struct show_branch: View {
     func branchRename(source: String, target: String) {
         let cmd = ["branch", "-m", source, target]
         GitBranchHelper.BranchRename(LocalRepoDir: repoPath, cmd: cmd) { output in
-            if output != nil {
+            if output == true {
                 refreshAction()
             }
         }

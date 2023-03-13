@@ -40,6 +40,7 @@ struct ui_alert_with_inputbox: View {
                     self.isPresented = false
                     self.onConfirm?(self.inputValue)
                 }
+                .buttonStyle(.borderedProminent)
             }
             .padding(.top, 20)
         }

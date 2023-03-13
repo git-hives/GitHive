@@ -46,9 +46,9 @@ class GitObserverMonitoring: NSObject, NSFilePresenter, ObservableObject {
             relativePath = String(fpath[range.upperBound...])
         }
         
-        var currentTimestamp = getCurrentTimeInMilliseconds()
+        let currentTimestamp = getCurrentTimeInMilliseconds()
         
-        print("[.git监听]---：", relativePath)
+        print("[.git 文件变更]---：", currentTimestamp, relativePath)
         if relativePath.prefix(5) != ".git/" {
             DispatchQueue.main.async {
                 self.monitoring_project_file = relativePath

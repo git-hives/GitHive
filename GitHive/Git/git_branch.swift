@@ -137,9 +137,9 @@ class GitBranchHelper: runGit {
     }
     
     // 分支切换
-    static func switchBranch(at LocalRepoDir: String, at branchname: String) -> Bool {
+    static func BranchSwitch(LocalRepoDir: String, name: String) -> Bool {
         var result: Bool = false
-        let cmd: [String] = ["checkout", branchname]
+        let cmd: [String] = ["checkout", name]
         let output = runGit.executeGit(at: LocalRepoDir, command: cmd)
         if let res = output {
             if res.contains("error:") {
@@ -149,6 +149,24 @@ class GitBranchHelper: runGit {
             }
         }
         return result
+    }
+    
+    // 分支：切换
+    static func BranchSwitchAsync(LocalRepoDir: String, name: String, completion: @escaping (Bool) -> Void) {
+        let cmd = ["switch", name]
+        runGit.executeGitAsync(at: LocalRepoDir, command: cmd) { output in
+            guard let output = output else {
+                completion(false)
+                return
+            }
+            let lines = output.replacingOccurrences(of: "\n", with: "")
+            if lines.isEmpty {
+                completion(true)
+            } else {
+                _ = showAlertOnlyPrompt(msgType: "warning", title: "", msg: lines, ConfirmBtnText: "OK")
+                completion(false)
+            }
+        }
     }
     
     static func refnameHandling(at name: String) -> [String]{
@@ -267,6 +285,5 @@ class GitBranchHelper: runGit {
             }
         }
     }
-    
     
 }
