@@ -20,3 +20,15 @@ extension String {
         return self.rangeOfCharacter(from: nonDigitSet) == nil
     }
 }
+
+
+// 分割字符串
+// 如下字符串："origin/test/test"  分割后：["origin", "test/test"]
+func splitString(_ str: String, delimiter: Character) -> [String] {
+    if let index = str.firstIndex(of: delimiter) {
+        let firstPart = String(str.prefix(upTo: index))
+        let secondPart = String(str.suffix(from: index).dropFirst())
+        return [firstPart, secondPart]
+    }
+    return [str]
+}

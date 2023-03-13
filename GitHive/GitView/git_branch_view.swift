@@ -52,6 +52,9 @@ struct git_branch_view: View {
         .onChange(of: GitObservable.GitBranchProperty) { value in
             getGitAllBranchList(repoPath: repoPath)
         }
+        .onChange(of: GitObservable.monitoring_git_push) { value in
+            getGitAllBranchList(repoPath: repoPath)
+        }
     }
     
     var view_filter: some View {
@@ -78,7 +81,7 @@ struct git_branch_view: View {
             
             if !iconFoldLocal {
                 ForEach(LocalBranchList, id:\.id) { item in
-                    show_branch(repoPath: repoPath, item: item, selectedItemId: $selectedItemId, hoverItemId: $hoverItemId)
+                    show_branch(repoPath: repoPath, item: item, selectedItemId: $selectedItemId, hoverItemId: $hoverItemId, refreshAction: { getGitAllBranchList(repoPath: repoPath) })
                 }
             }
         }
@@ -98,7 +101,7 @@ struct git_branch_view: View {
             
             if !iconFoldRemote {
                 ForEach(remoteBranchList, id:\.id) { item in
-                    show_branch(repoPath: repoPath, item: item, selectedItemId: $selectedItemId, hoverItemId: $hoverItemId)
+                    show_branch(repoPath: repoPath, item: item, selectedItemId: $selectedItemId, hoverItemId: $hoverItemId, refreshAction: { getGitAllBranchList(repoPath: repoPath) })
                 }
             }
         }
@@ -171,6 +174,7 @@ private struct show_branch: View {
     
     @Binding var selectedItemId: String
     @Binding var hoverItemId: String
+    var refreshAction: () -> Void
     
     @State private var showCreateBranchWindow: Bool = false
     @State private var selectedBranchName: String = ""
@@ -212,10 +216,17 @@ private struct show_branch: View {
                 Button("Rename...", action: {
                     
                 })
+                Button("Delete \(item.name)", action: {
+                    self.selectedItemId = item.id
+                    branchDelete(name: item.name, DeleteType: "local")
+                })
             }
-            Button("Delete \(item.name)", action: {
-                
-            })
+            if item.reftype == "remote" {
+                Button("Delete \(item.name)", action: {
+                    self.selectedItemId = item.id
+                    branchDelete(name: item.name, DeleteType: "remote")
+                })
+            }
             Divider()
             Button("Copy Branch Name to Clipboard", action: {
                 
@@ -223,6 +234,19 @@ private struct show_branch: View {
         }
         .sheet(isPresented: $showCreateBranchWindow) {
             git_branch_create_view(projectPath: repoPath, userSelectedRef: selectedBranchName, isShowWindow: $showCreateBranchWindow)
+        }
+    }
+    
+    // 删除本地分支
+    func branchDelete(name: String, DeleteType: String) {
+        let isDelete = showAlert(title: "Confirm Branch Deletion", msg: "Are you sure you want to delete the following Branch?\n\n \(name)", ConfirmBtnText: "Delete")
+        if !isDelete {
+            return
+        }
+        GitBranchHelper.BranchDelete(LocalRepoDir: repoPath, name: name, DeleteType: DeleteType) { output in
+            if output != nil {
+                refreshAction()
+            }
         }
     }
 }

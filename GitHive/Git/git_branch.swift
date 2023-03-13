@@ -226,4 +226,29 @@ class GitBranchHelper: runGit {
             }
         }
     }
+    
+    // 分支：删除
+    static func BranchDelete(LocalRepoDir: String, name: String, DeleteType: String, completion: @escaping (Bool) -> Void) {
+        var cmd: [String] = ["branch", "-D", name]
+        if DeleteType == "remote" {
+            let splitResult: [String] = splitString(name, delimiter: "/")
+            cmd = ["push", splitResult[0], "--delete", splitResult[1]]
+        }
+        runGit.executeGitAsync(at: LocalRepoDir, command: cmd) { output in
+            guard let output = output else {
+                completion(false)
+                return
+            }
+            let lines = output.replacingOccurrences(of: "\n", with: "")
+            print("Git分支删除结果: ", output)
+            if lines.contains("Deleted branch \(name)") || lines.contains("- [deleted]") {
+                completion(true)
+            } else {
+                _ = showAlertOnlyPrompt(msgType: "warning", title: "", msg: lines, ConfirmBtnText: "OK")
+                completion(false)
+            }
+        }
+    }
+    
+    
 }
