@@ -218,6 +218,7 @@ private struct show_branch: View {
                     self.selectedItemId = item.id
                     _ = GitBranchHelper.BranchSwitch(LocalRepoDir: repoPath, name: item.name)
                 })
+                .disabled(currentBranch == item.name)
             }
             Divider()
             Button("Create Branch", action: {
@@ -239,6 +240,7 @@ private struct show_branch: View {
                     self.selectedItemId = item.id
                     branchDelete(name: item.name, DeleteType: "local")
                 })
+                .disabled(currentBranch == item.name)
             }
             if item.reftype == "remote" {
                 Button("Delete \(item.name)", action: {
@@ -264,9 +266,9 @@ private struct show_branch: View {
         }
     }
     
-    // 删除本地分支
+    // 删除本地分支和远程分支
     func branchDelete(name: String, DeleteType: String) {
-        let isDelete = showAlert(title: "Confirm Branch Deletion", msg: "Are you sure you want to delete the following Branch?\n\n \(name)", ConfirmBtnText: "Delete")
+        let isDelete = showAlert(title: "Delete Branch \(name)?", msg: "", ConfirmBtnText: "Delete")
         if !isDelete {
             return
         }

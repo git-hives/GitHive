@@ -65,7 +65,9 @@ struct git_tags_view: View {
         Section {
             if !iconFoldLocal {
                 ForEach(tagsList, id:\.id) { item in
-                    show_tag(repoPath: repoPath, item: item, selectedItemId: $selectedItemId, hoverItemId: $hoverItemId)
+                    show_tag(repoPath: repoPath, item: item, selectedItemId: $selectedItemId, hoverItemId: $hoverItemId, refreshAction: {
+                        getGitAllTagsList(repoPath: repoPath)
+                    })
                 }
             }
         }
@@ -78,8 +80,6 @@ struct git_tags_view: View {
         if repoPath.isEmpty {
             return
         }
-        
-        // 获取tag
         var tList: [gitTagItem] = []
         GitTagHelper.getTagListAsync(at: repoPath) { output in
             if !output.isEmpty {
@@ -99,9 +99,8 @@ struct git_tags_view: View {
     // 过滤tag
     func filterTag() {
         let fileterText = self.searchText.trimming()
-        
         self.tagsList = self.rawTagsList
-        
+
         if fileterText.isEmpty {
             return
         }
@@ -118,6 +117,7 @@ private struct show_tag: View {
     
     @Binding var selectedItemId: String
     @Binding var hoverItemId: String
+    var refreshAction: () -> Void
     
     @State private var showCreateBranchWindow: Bool = false
     @State private var selectedBranchName: String = ""
@@ -161,10 +161,12 @@ private struct show_tag: View {
             Group {
                 Divider()
                 Button("Delete \(item.name)", action: {
-
+                    self.selectedItemId = item.id
+                    tagDelete(name: item.name, DeleteType: "local")
                 })
                 Button("Delete \(item.name) from origin", action: {
-
+                    self.selectedItemId = item.id
+                    tagDelete(name: item.name, DeleteType: "local")
                 })
                 Divider()
             }
@@ -174,6 +176,19 @@ private struct show_tag: View {
         }
         .sheet(isPresented: $showCreateBranchWindow) {
             git_branch_create_view(projectPath: repoPath, userSelectedRef: selectedBranchName, isShowWindow: $showCreateBranchWindow)
+        }
+    }
+    
+    // 删除本地标签和远程标签
+    func tagDelete(name: String, DeleteType: String) {
+        let isDelete = showAlert(title: "Delete Tag \(name) ?", msg: "", ConfirmBtnText: "Delete")
+        if !isDelete {
+            return
+        }
+        GitTagHelper.DeleteAsync(LocalRepoDir: repoPath, name: name, DeleteType: DeleteType) { output in
+            if output == true {
+                refreshAction()
+            }
         }
     }
 }

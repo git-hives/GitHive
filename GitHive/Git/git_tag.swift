@@ -15,7 +15,7 @@ struct gitTagItem: Identifiable {
 
 class GitTagHelper: runGit {
     
-    // 分支：获取本地所有tag
+    // Tag：获取本地所有tag
     static func getTagListAsync(at LocalRepoDir: String, completion: @escaping ([String]) -> Void)  {
         var result: [String] = []
         let cmd: [String] = ["tag", "--list"]
@@ -29,6 +29,28 @@ class GitTagHelper: runGit {
                 String($0)
             }
             completion(result)
+        }
+    }
+    
+    // Tag：删除
+    static func DeleteAsync(LocalRepoDir: String, name: String, DeleteType: String, completion: @escaping (Bool) -> Void) {
+        var cmd: [String] = ["tag", "-d", name]
+        if DeleteType == "remote" {
+            cmd = ["push", "origin", "--delete", name]
+        }
+        runGit.executeGitAsync(at: LocalRepoDir, command: cmd) { output in
+            guard let output = output else {
+                completion(false)
+                return
+            }
+            let lines = output.replacingOccurrences(of: "\n", with: "")
+            print("Git Tag删除结果: ", output)
+            if lines.contains("Deleted tag") || lines.contains("- [deleted]") {
+                completion(true)
+            } else {
+                _ = showAlertOnlyPrompt(msgType: "warning", title: "", msg: lines, ConfirmBtnText: "OK")
+                completion(false)
+            }
         }
     }
 }
