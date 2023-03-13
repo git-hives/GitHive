@@ -162,11 +162,11 @@ private struct show_tag: View {
                 Divider()
                 Button("Delete \(item.name)", action: {
                     self.selectedItemId = item.id
-                    tagDelete(name: item.name, DeleteType: "local")
+                    tagDelete(name: item.name, DeleteType: "Local")
                 })
                 Button("Delete \(item.name) from origin", action: {
                     self.selectedItemId = item.id
-                    tagDelete(name: item.name, DeleteType: "local")
+                    tagDelete(name: item.name, DeleteType: "Remote")
                 })
                 Divider()
             }
@@ -181,7 +181,7 @@ private struct show_tag: View {
     
     // 删除本地标签和远程标签
     func tagDelete(name: String, DeleteType: String) {
-        let isDelete = showAlert(title: "Delete Tag \(name) ?", msg: "", ConfirmBtnText: "Delete")
+        let isDelete = showAlert(title: "Delete \(DeleteType) Tag \(name) ?", msg: "", ConfirmBtnText: "Delete")
         if !isDelete {
             return
         }

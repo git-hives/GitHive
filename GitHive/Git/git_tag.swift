@@ -35,7 +35,7 @@ class GitTagHelper: runGit {
     // Tag：删除
     static func DeleteAsync(LocalRepoDir: String, name: String, DeleteType: String, completion: @escaping (Bool) -> Void) {
         var cmd: [String] = ["tag", "-d", name]
-        if DeleteType == "remote" {
+        if DeleteType == "Remote" {
             cmd = ["push", "origin", "--delete", name]
         }
         runGit.executeGitAsync(at: LocalRepoDir, command: cmd) { output in
