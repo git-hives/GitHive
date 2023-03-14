@@ -7,6 +7,9 @@
 	objects = {
 
 /* Begin PBXBuildFile section */
+		63124AEE29C0A18900123FB3 /* git_push.swift in Sources */ = {isa = PBXBuildFile; fileRef = 63124AED29C0A18900123FB3 /* git_push.swift */; };
+		63124AF029C0A20500123FB3 /* git_pull.swift in Sources */ = {isa = PBXBuildFile; fileRef = 63124AEF29C0A20500123FB3 /* git_pull.swift */; };
+		63124AF229C0A25E00123FB3 /* git_fetch.swift in Sources */ = {isa = PBXBuildFile; fileRef = 63124AF129C0A25E00123FB3 /* git_fetch.swift */; };
 		634E5C7329BC2AAF00A2C75B /* GitHiveApp.swift in Sources */ = {isa = PBXBuildFile; fileRef = 634E5C7229BC2AAF00A2C75B /* GitHiveApp.swift */; };
 		634E5C7529BC2AAF00A2C75B /* Main.swift in Sources */ = {isa = PBXBuildFile; fileRef = 634E5C7429BC2AAF00A2C75B /* Main.swift */; };
 		634E5C7729BC2AB000A2C75B /* Assets.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = 634E5C7629BC2AB000A2C75B /* Assets.xcassets */; };
@@ -52,6 +55,9 @@
 /* End PBXBuildFile section */
 
 /* Begin PBXFileReference section */
+		63124AED29C0A18900123FB3 /* git_push.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = git_push.swift; sourceTree = "<group>"; };
+		63124AEF29C0A20500123FB3 /* git_pull.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = git_pull.swift; sourceTree = "<group>"; };
+		63124AF129C0A25E00123FB3 /* git_fetch.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = git_fetch.swift; sourceTree = "<group>"; };
 		634E5C6F29BC2AAF00A2C75B /* GitHive.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = GitHive.app; sourceTree = BUILT_PRODUCTS_DIR; };
 		634E5C7229BC2AAF00A2C75B /* GitHiveApp.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = GitHiveApp.swift; sourceTree = "<group>"; };
 		634E5C7429BC2AAF00A2C75B /* Main.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Main.swift; sourceTree = "<group>"; };
@@ -209,11 +215,14 @@
 				634E5CB929BC2D2000A2C75B /* git_action.swift */,
 				634E5CBA29BC2D2000A2C75B /* git_branch.swift */,
 				634E5CB729BC2D2000A2C75B /* git_clone.swift */,
+				63124AF129C0A25E00123FB3 /* git_fetch.swift */,
 				634E5CB629BC2D2000A2C75B /* git_log.swift */,
+				63124AEF29C0A20500123FB3 /* git_pull.swift */,
+				63124AED29C0A18900123FB3 /* git_push.swift */,
 				634E5CB829BC2D2000A2C75B /* git_run.swift */,
-				634E5CBB29BC2D2000A2C75B /* monitoring.swift */,
-				63CB38F529BDBA9F005FC613 /* git_tag.swift */,
 				63CB38F729BDC579005FC613 /* git_stash.swift */,
+				63CB38F529BDBA9F005FC613 /* git_tag.swift */,
+				634E5CBB29BC2D2000A2C75B /* monitoring.swift */,
 			);
 			path = Git;
 			sourceTree = "<group>";
@@ -315,7 +324,9 @@
 				634E5CAE29BC2D1800A2C75B /* git_files_view.swift in Sources */,
 				634E5CBF29BC2D2000A2C75B /* git_action.swift in Sources */,
 				63CB38F629BDBA9F005FC613 /* git_tag.swift in Sources */,
+				63124AEE29C0A18900123FB3 /* git_push.swift in Sources */,
 				63CB38F829BDC579005FC613 /* git_stash.swift in Sources */,
+				63124AF229C0A25E00123FB3 /* git_fetch.swift in Sources */,
 				634E5CB129BC2D1800A2C75B /* git_branch_create_view.swift in Sources */,
 				634E5CBC29BC2D2000A2C75B /* git_log.swift in Sources */,
 				634E5CBD29BC2D2000A2C75B /* git_clone.swift in Sources */,
@@ -327,6 +338,7 @@
 				634E5CD129BC2D5A00A2C75B /* string.swift in Sources */,
 				634E5CCF29BC2D5A00A2C75B /* ui_styles.swift in Sources */,
 				634E5CD229BC2D5A00A2C75B /* ui_view.swift in Sources */,
+				63124AF029C0A20500123FB3 /* git_pull.swift in Sources */,
 				634E5CAA29BC2D1800A2C75B /* git_logs_view.swift in Sources */,
 				634E5CAF29BC2D1800A2C75B /* toolbar_branch_view.swift in Sources */,
 				634E5C9429BC2D0200A2C75B /* utils_path.swift in Sources */,

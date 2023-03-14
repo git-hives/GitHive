@@ -119,7 +119,7 @@ struct git_pull: View {
     func g_fetch() {
         self.isManuallyTriggerTheExecutionOfGit = true
         self.isRotatingForFetch = true
-        GitAction.fetchAsync(LocalRepoDir: repoDir, param: .fetch) { output in
+        GitFetchHelper.fetchAsync(LocalRepoDir: repoDir, param: .fetch) { output in
             if let output = output, !output.contains("error") {
                 get_pull_behind()
             }
@@ -149,7 +149,7 @@ struct git_pull: View {
             isButtonDisabled = true
         }
 
-        GitAction.pullAsync(LocalRepoDir: repoDir, param: param) { output in
+        GitPullHelper.pullAsync(LocalRepoDir: repoDir, param: param) { output in
             if let output = output {
                 print(output)
             }

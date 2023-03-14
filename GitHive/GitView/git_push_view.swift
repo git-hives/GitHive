@@ -108,7 +108,7 @@ struct git_push: View {
             isButtonDisabled = true
         }
 
-        GitAction.pushAsync(LocalRepoDir: repoDir, param: param) { output in
+        GitPushHelper.pushAsync(LocalRepoDir: repoDir, param: param) { output in
             if let output = output {
                 print(output)
             }
