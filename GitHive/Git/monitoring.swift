@@ -66,7 +66,7 @@ class GitObserverMonitoring: NSObject, NSFilePresenter, ObservableObject {
                 self.monitoring_git_index += 1
             }
         }
-        if relativePath == ".git/FETCH_HEAD" {
+        if relativePath == ".git/FETCH_HEAD" || fpath.contains("git/refs/remotes/origin/") {
             if currentTimestamp - last_fetch_time > 4800 {
                 DispatchQueue.main.asyncAfter(deadline: .now() + 1) {
                     self.monitoring_git_pull += 1

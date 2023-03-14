@@ -57,6 +57,9 @@ struct git_logs_view: View {
         .onChange(of: GitObservable.GitBranchProperty) { value in
             getGitLogList(repoPath: repoPath, dataList: $gitLogList)
         }
+        .onChange(of: GitObservable.monitoring_git_pull) { value in
+            getGitLogList(repoPath: repoPath, dataList: $gitLogList)
+        }
     }
 }
 

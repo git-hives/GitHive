@@ -148,16 +148,23 @@ struct git_pull: View {
         if !isButtonDisabled {
             isButtonDisabled = true
         }
-
-        GitPullHelper.pullAsync(LocalRepoDir: repoDir, param: param) { output in
-            if output["type"] == "success" {
-                get_pull_behind()
-                DispatchQueue.main.async {
-                    Behind = ""
+        
+        Task {
+            do {
+                let result = try await GitPullHelper.pullAsync(LocalRepoDir: repoDir, param: param)
+                //print("git pull结果：", result)
+                if result["type"] == "success" {
+                    get_pull_behind()
+                    DispatchQueue.main.async {
+                        Behind = ""
+                    }
+                } else {
+                    let errorMessage = result["msg"] ?? ""
+                    _ = showAlert(title: "git pull", msg: errorMessage, ConfirmBtnText: "Ok")
                 }
-            } else {
-                let errorMessage = output["msg"] ?? ""
-                _ = showAlert(title: "git pull", msg: errorMessage, ConfirmBtnText: "Ok")
+            } catch let error {
+                let msg = getErrorMessage(etype: error as! GitError)
+                _ = showAlert(title: "Error", msg: msg, ConfirmBtnText: "Ok")
             }
             DispatchQueue.main.async {
                 isButtonDisabled = false

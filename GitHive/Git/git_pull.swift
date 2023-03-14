@@ -33,8 +33,13 @@ func extractString(in sourceString: String, before: String, after: String) -> St
 
 class GitPullHelper: runGit {
     
+    static func matchPullResult(_ result: String) -> Bool {
+        let pattern = "[0-9a-zA-Z]+\\.\\.[0-9a-zA-Z]+"
+        return result.range(of: pattern, options: .regularExpression) != nil
+    }
+    
     // git pull
-    static func pullAsync(LocalRepoDir: String, param: gitPullParam = .rebase, completion: @escaping ([String:String]) -> Void) {
+    static func pullAsync(LocalRepoDir: String, param: gitPullParam = .rebase) async throws -> [String:String] {
         var pullCmd: [String] = []
         switch param {
         case .pull:
@@ -50,29 +55,27 @@ class GitPullHelper: runGit {
         do_git_pull_action = true
         var pullResult = ["type": "error" ,"msg": ""]
         
-        runGit.executeGitAsync(at: LocalRepoDir, command: pullCmd) { output in
-            DispatchQueue.main.asyncAfter(deadline: .now() + 2) {
-                do_git_pull_action = false
-            }
-            
-            guard let output = output else {
-                completion(pullResult)
-                return
-            }
-            
-            if output.contains("git pull <remote>") {
-                if let extractedString = extractString(in: output, before: "See git-pull", after: "There is no tracking") {
-                    pullResult["msg"] = extractedString
-                } else {
-                    pullResult["msg"] = output
-                }
-            } else if output.contains("Already up to date.") {
-                pullResult["type"] = "success"
+        let output = try await executeGitAsync2(at: LocalRepoDir, command: pullCmd)
+        guard var output = output else {
+            throw GitError.gitRunFailed
+        }
+        
+        // 使用正则匹配 aeaeb29..4a8768b
+        let isMatch = matchPullResult(output)
+        
+        //print("git pull命令运行结果:", output)
+        if output.contains("git pull <remote>") {
+            if let extractedString = extractString(in: output, before: "See git-pull", after: "There is no tracking") {
+                pullResult["msg"] = extractedString
             } else {
                 pullResult["msg"] = output
             }
-            completion(pullResult)
-       }
+        } else if output.contains("Already up to date.") || isMatch {
+            pullResult["type"] = "success"
+        } else {
+            pullResult["msg"] = output
+        }
+        return pullResult
     }
     
 }
