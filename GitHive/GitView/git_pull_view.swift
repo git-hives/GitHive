@@ -150,15 +150,17 @@ struct git_pull: View {
         }
 
         GitPullHelper.pullAsync(LocalRepoDir: repoDir, param: param) { output in
-            if let output = output {
-                print(output)
-            }
-            get_pull_behind()
-            DispatchQueue.main.async {
-                isButtonDisabled = false
-                if output == "pull_success" {
+            if output["type"] == "success" {
+                get_pull_behind()
+                DispatchQueue.main.async {
                     Behind = ""
                 }
+            } else {
+                let errorMessage = output["msg"] ?? ""
+                _ = showAlert(title: "git pull", msg: errorMessage, ConfirmBtnText: "Ok")
+            }
+            DispatchQueue.main.async {
+                isButtonDisabled = false
             }
         }
     }
