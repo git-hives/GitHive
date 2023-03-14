@@ -10,6 +10,7 @@
 		63124AEE29C0A18900123FB3 /* git_push.swift in Sources */ = {isa = PBXBuildFile; fileRef = 63124AED29C0A18900123FB3 /* git_push.swift */; };
 		63124AF029C0A20500123FB3 /* git_pull.swift in Sources */ = {isa = PBXBuildFile; fileRef = 63124AEF29C0A20500123FB3 /* git_pull.swift */; };
 		63124AF229C0A25E00123FB3 /* git_fetch.swift in Sources */ = {isa = PBXBuildFile; fileRef = 63124AF129C0A25E00123FB3 /* git_fetch.swift */; };
+		63124AF429C0BBF900123FB3 /* git_error.swift in Sources */ = {isa = PBXBuildFile; fileRef = 63124AF329C0BBF900123FB3 /* git_error.swift */; };
 		634E5C7329BC2AAF00A2C75B /* GitHiveApp.swift in Sources */ = {isa = PBXBuildFile; fileRef = 634E5C7229BC2AAF00A2C75B /* GitHiveApp.swift */; };
 		634E5C7529BC2AAF00A2C75B /* Main.swift in Sources */ = {isa = PBXBuildFile; fileRef = 634E5C7429BC2AAF00A2C75B /* Main.swift */; };
 		634E5C7729BC2AB000A2C75B /* Assets.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = 634E5C7629BC2AB000A2C75B /* Assets.xcassets */; };
@@ -58,6 +59,7 @@
 		63124AED29C0A18900123FB3 /* git_push.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = git_push.swift; sourceTree = "<group>"; };
 		63124AEF29C0A20500123FB3 /* git_pull.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = git_pull.swift; sourceTree = "<group>"; };
 		63124AF129C0A25E00123FB3 /* git_fetch.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = git_fetch.swift; sourceTree = "<group>"; };
+		63124AF329C0BBF900123FB3 /* git_error.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = git_error.swift; sourceTree = "<group>"; };
 		634E5C6F29BC2AAF00A2C75B /* GitHive.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = GitHive.app; sourceTree = BUILT_PRODUCTS_DIR; };
 		634E5C7229BC2AAF00A2C75B /* GitHiveApp.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = GitHiveApp.swift; sourceTree = "<group>"; };
 		634E5C7429BC2AAF00A2C75B /* Main.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Main.swift; sourceTree = "<group>"; };
@@ -223,6 +225,7 @@
 				63CB38F729BDC579005FC613 /* git_stash.swift */,
 				63CB38F529BDBA9F005FC613 /* git_tag.swift */,
 				634E5CBB29BC2D2000A2C75B /* monitoring.swift */,
+				63124AF329C0BBF900123FB3 /* git_error.swift */,
 			);
 			path = Git;
 			sourceTree = "<group>";
@@ -353,6 +356,7 @@
 				634E5CD429BC2E1F00A2C75B /* app-settings-view.swift in Sources */,
 				634E5C8D29BC2BCB00A2C75B /* menu_Repository.swift in Sources */,
 				634E5CAC29BC2D1800A2C75B /* git_tags_view.swift in Sources */,
+				63124AF429C0BBF900123FB3 /* git_error.swift in Sources */,
 				634E5C8229BC2B0400A2C75B /* Config.swift in Sources */,
 				634E5CB329BC2D1800A2C75B /* git_pull_view.swift in Sources */,
 				634E5CB029BC2D1800A2C75B /* git_stash_view.swift in Sources */,

@@ -17,6 +17,10 @@ struct git_push: View {
     @State var Ahead: String = ""
     @State var isButtonDisabled = false
     
+    var currentBranch: String {
+        GitObservable.GitBranchProperty
+    }
+    
     // Git push按钮
     var body: some View {
         HStack {
@@ -107,17 +111,33 @@ struct git_push: View {
         if !isButtonDisabled {
             isButtonDisabled = true
         }
-
-        GitPushHelper.pushAsync(LocalRepoDir: repoDir, param: param) { output in
-            if let output = output {
-                print(output)
-            }
-            DispatchQueue.main.async {
-                isButtonDisabled = false
-                if output == "push_success" {
-                    Ahead = ""
+        
+        Task {
+            do {
+                var result = try await GitPushHelper.pushAsync(LocalRepoDir: repoDir, param: param)
+                
+                if result.contains("git push --set-upstream") {
+                    let upMsg = "The current branch \(currentBranch) has no upstream branch.\nTo push the current branch and set the remote as upstream. \n\n git push --set-upstream origin \(currentBranch)"
+                    let isPush = showAlert(title: "Git Push", msg: upMsg, ConfirmBtnText: "Push")
+                    isButtonDisabled = false
+                    if !isPush {
+                       return
+                    }
+                    result = try await GitPushHelper.pushAsync(LocalRepoDir: repoDir, param: .upstream, branchName: currentBranch)
                 }
+                
+                if result == "push_success" {
+                    DispatchQueue.main.async {
+                        Ahead = ""
+                    }
+                } else {
+                    _ = showAlert(title: "Error", msg: result, ConfirmBtnText: "Ok")
+                }
+            } catch let error {
+                let msg = getErrorMessage(etype: error as! GitError)
+                _ = showAlert(title: "Error", msg: msg, ConfirmBtnText: "Ok")
             }
+            isButtonDisabled = false
         }
     }
 }

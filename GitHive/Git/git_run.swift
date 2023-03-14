@@ -9,13 +9,6 @@ import Foundation
 import Cocoa
 
 
-enum GitError: Error {
-    case preCheckFailed
-    case gitPathNotFound
-    case changeGitDirectoryFailed
-    case gitRunFailed
-}
-
 class runGit {
     
     static var customGitPath: String?
@@ -209,6 +202,44 @@ class runGit {
                 completion(output)
             }
         }
+    }
+    
+    
+    static func executeGitAsync2(at path: String, command: [String]) async throws -> String? {
+        if !PreCheckResult {
+            throw GitError.preCheckFailed
+        }
+
+        if osGitPath == "" {
+            guard getGitPath() != nil else {
+                throw GitError.gitPathNotFound
+            }
+        }
+
+        // 切换目录
+        let fileManager = FileManager.default
+        guard fileManager.changeCurrentDirectoryPath(path) else {
+            throw GitError.changeGitDirectoryFailed
+        }
+
+        // Launch the git command with the found git path
+        let task = Process()
+        task.launchPath = osGitPath
+        task.arguments = command
+        let pipe = Pipe()
+        task.standardOutput = pipe
+        task.standardError = pipe
+
+        do {
+            try task.run()
+        } catch let error {
+            print("Failed to run task with error: \(error.localizedDescription)")
+            throw GitError.gitRunFailed
+        }
+
+        let data = pipe.fileHandleForReading.readDataToEndOfFile()
+        let output = String(data: data, encoding: .utf8)
+        return output ?? ""
     }
 }
 
