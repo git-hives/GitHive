@@ -119,9 +119,17 @@ struct git_pull: View {
     func g_fetch() {
         self.isManuallyTriggerTheExecutionOfGit = true
         self.isRotatingForFetch = true
-        GitFetchHelper.fetchAsync(LocalRepoDir: repoDir, param: .fetch) { output in
-            if let output = output, !output.contains("error") {
+        Task {
+            do {
+                let result = try await GitFetchHelper.fetchAsync(LocalRepoDir: repoDir, param: .fetch)
+                print(".....-", result)
                 get_pull_behind()
+                if ((result?.contains("error")) != nil) {
+                    _ = showAlert(title: "Error", msg: result!, ConfirmBtnText: "Ok")
+                }
+            } catch let error {
+                let msg = getErrorMessage(etype: error as! GitError)
+                _ = showAlert(title: "Error", msg: msg, ConfirmBtnText: "Ok")
             }
             DispatchQueue.main.async {
                 self.isRotatingForFetch = false

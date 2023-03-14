@@ -9,35 +9,52 @@ import Foundation
 
 enum gitFetchParam {
     case fetch
+    case fetchPrune
+    case fetchTags
 }
 
 
 class GitFetchHelper: runGit {
     
+    static func matchFetchResult(_ result: String) -> Bool {
+        let pattern = "[0-9a-zA-Z]+\\.\\.[0-9a-zA-Z]+"
+        return result.range(of: pattern, options: .regularExpression) != nil
+    }
+    
     // git fetch
-    static func fetchAsync(LocalRepoDir: String, param: gitFetchParam = .fetch, completion: @escaping (String?) -> Void) {
+    static func fetchAsync(LocalRepoDir: String, param: gitFetchParam = .fetch) async throws -> String? {
         var fetchCmd: [String] = []
         switch param {
         case .fetch:
             fetchCmd = ["fetch"]
+        case .fetchPrune:
+            fetchCmd = ["fetch", "--prune"]
+        case .fetchTags:
+            fetchCmd = ["fetch", "--tags"]
         }
         
-        runGit.executeGitAsync(at: LocalRepoDir, command: fetchCmd) { output in
-            guard let output = output else {
-                return completion(nil)
-            }
-            //print("git fetch命令运行结果:", output)
-            if  output.count == 0 {
-                return completion(nil)
-            }
-            if output.contains("error") {
-                return completion("network_error")
-            }
-            if output.contains("-> ") {
-                return completion("success")
-            }
-            completion(output)
-       }
+        let output = try await executeGitAsync2(at: LocalRepoDir, command: fetchCmd)
+        
+        guard let output = output else {
+            return nil
+        }
+        //print("git fetch命令运行结果:", output)
+        
+        let isMatch = matchFetchResult(output)
+        
+        if  output.count == 0 {
+            return nil
+        }
+        if output.contains("error") {
+            return output
+        }
+        if output.contains("-> ") || isMatch {
+            return "success"
+        }
+        if output.hasSuffix("sqlite3_open_v2\n") {
+            return nil
+        }
+        return output
     }
     
 }
