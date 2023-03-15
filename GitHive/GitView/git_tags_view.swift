@@ -178,7 +178,8 @@ private struct show_tag: View {
                 Divider()
             }
             Button("Copy Tag Name to Clipboard", action: {
-
+                self.selectedItemId = item.id
+                copyToPasteboard(at: item.name)
             })
         }
         .sheet(isPresented: $showCreateBranchWindow) {
