@@ -134,8 +134,16 @@ private struct show_stash: View {
     var body: some View {
         VStack(alignment: .leading) {
             HStack {
-                Text(item.name)
-                    .foregroundColor(selectedItemId == item.id ? .white : .primary)
+//                Text(item.name)
+//                    .foregroundColor(selectedItemId == item.id ? .white : .primary)
+                Button(action: {
+                    print("----------", repoPath, item.name)
+                    git_stash_details_view(repoDir: repoPath, stashName: item.name)
+                }, label: {
+                    Text(item.name)
+                        .foregroundColor(selectedItemId == item.id ? .white : .primary)
+                })
+                .buttonStyle(.plain)
                 Spacer()
             }
         }
@@ -212,11 +220,5 @@ func gitStashDrop(repoPath: String, name: String) {
             let msg = getErrorMessage(etype: error as! GitError)
             _ = showAlert(title: "Error", msg: msg, ConfirmBtnText: "Ok")
         }
-    }
-}
-
-struct git_stash_view_Previews: PreviewProvider {
-    static var previews: some View {
-        git_stash_view()
     }
 }

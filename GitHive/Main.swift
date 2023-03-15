@@ -156,6 +156,8 @@ struct Main: View {
             switch(self.activeNavName) {
             case .Files:
                 git_files_details_view()
+            case .Stash:
+                git_stash_details_view()
             default:
                 git_default_view()
             }

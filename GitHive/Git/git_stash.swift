@@ -95,5 +95,29 @@ class GitStashHelper: runGit {
             return output
         }
     }
+    
+    // stash: details
+    static func showDetails(LocalRepoDir: String, name: String) async throws -> String {
+        var stashName = name
+        if !name.isEmpty {
+            if let matchResult = matchStashReference(name) {
+                stashName = matchResult
+            }
+        }
+        
+        let cmd: [String] = ["stash", "show", "-p", stashName]
+        let output = try await executeGitAsync2(at: LocalRepoDir, command: cmd)
+        print(output)
+        guard let output = output else {
+            throw GitError.gitRunFailed
+        }
+//        //print("git Stash drop结果:", output)
+//        if output.hasPrefix("Dropped \(stashName)") {
+//            return "success"
+//        } else {
+//            return output
+//        }
+        return output
+    }
 }
 

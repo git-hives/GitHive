@@ -53,6 +53,7 @@
 		63CB38F629BDBA9F005FC613 /* git_tag.swift in Sources */ = {isa = PBXBuildFile; fileRef = 63CB38F529BDBA9F005FC613 /* git_tag.swift */; };
 		63CB38F829BDC579005FC613 /* git_stash.swift in Sources */ = {isa = PBXBuildFile; fileRef = 63CB38F729BDC579005FC613 /* git_stash.swift */; };
 		63F99FA929BF6612002BC6C2 /* ui_alert_with_inputbox.swift in Sources */ = {isa = PBXBuildFile; fileRef = 63F99FA829BF6612002BC6C2 /* ui_alert_with_inputbox.swift */; };
+		63FF605929C20B5A002BCE44 /* git_stash_details_view.swift in Sources */ = {isa = PBXBuildFile; fileRef = 63FF605829C20B5A002BCE44 /* git_stash_details_view.swift */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXFileReference section */
@@ -104,6 +105,7 @@
 		63CB38F529BDBA9F005FC613 /* git_tag.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = git_tag.swift; sourceTree = "<group>"; };
 		63CB38F729BDC579005FC613 /* git_stash.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = git_stash.swift; sourceTree = "<group>"; };
 		63F99FA829BF6612002BC6C2 /* ui_alert_with_inputbox.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ui_alert_with_inputbox.swift; sourceTree = "<group>"; };
+		63FF605829C20B5A002BCE44 /* git_stash_details_view.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = git_stash_details_view.swift; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -247,6 +249,7 @@
 				634E5CA129BC2D1800A2C75B /* toolbar_branch_view.swift */,
 				634E5C9F29BC2D1800A2C75B /* toolbar_projectinfo.swift */,
 				634E5C9A29BC2D1800A2C75B /* welcome_view.swift */,
+				63FF605829C20B5A002BCE44 /* git_stash_details_view.swift */,
 			);
 			path = GitView;
 			sourceTree = "<group>";
@@ -346,6 +349,7 @@
 				634E5CAF29BC2D1800A2C75B /* toolbar_branch_view.swift in Sources */,
 				634E5C9429BC2D0200A2C75B /* utils_path.swift in Sources */,
 				634E5CC129BC2D2000A2C75B /* monitoring.swift in Sources */,
+				63FF605929C20B5A002BCE44 /* git_stash_details_view.swift in Sources */,
 				634E5CC029BC2D2000A2C75B /* git_branch.swift in Sources */,
 				63F99FA929BF6612002BC6C2 /* ui_alert_with_inputbox.swift in Sources */,
 				634E5CB529BC2D1800A2C75B /* git_default_view.swift in Sources */,
