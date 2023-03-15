@@ -7,6 +7,8 @@
 
 import SwiftUI
 
+fileprivate var isRefreshStashList: Int = 0
+
 struct git_stash_view: View {
     @EnvironmentObject var GitObservable: GitObservable
     
@@ -51,6 +53,9 @@ struct git_stash_view: View {
                 getGitAllStashList()
             }
         }
+        .onChange(of: isRefreshStashList) { value in
+            getGitAllStashList()
+        }
     }
     
     // 视图：过滤
@@ -70,9 +75,7 @@ struct git_stash_view: View {
         Section {
             if !iconFoldLocal {
                 ForEach(stashList, id:\.id) { item in
-                    show_stash(repoPath: repoPath, item: item, selectedItemId: $selectedItemId, hoverItemId: $hoverItemId, refreshAction: {
-                        getGitAllStashList()
-                    })
+                    show_stash(repoPath: repoPath, item: item, selectedItemId: $selectedItemId, hoverItemId: $hoverItemId)
                 }
             }
         }
@@ -127,7 +130,6 @@ private struct show_stash: View {
     
     @Binding var selectedItemId: String
     @Binding var hoverItemId: String
-    var refreshAction: () -> Void
     
     var body: some View {
         VStack(alignment: .leading) {
@@ -150,68 +152,68 @@ private struct show_stash: View {
         }
         .contextMenu {
             Button("Pop Stash", action: {
-                gitStashPop()
+                gitStashPop(repoPath: repoPath)
             })
             Divider()
             Button("Apply Stash", action: {
-                gitStashApply(name: item.name)
+                gitStashApply(repoPath: repoPath, name: item.name)
             })
             Divider()
             Button("Drop Stash", action: {
-                gitStashDrop(name: item.name)
+                gitStashDrop(repoPath: repoPath, name: item.name)
             })
-        }
-    }
-    
-    func gitStashPop() {
-        Task {
-            do {
-                let result = try await GitStashHelper.pop(LocalRepoDir: repoPath)
-                if !result.isEmpty {
-                    refreshAction()
-                }
-            } catch let error {
-                let msg = getErrorMessage(etype: error as! GitError)
-                _ = showAlert(title: "Error", msg: msg, ConfirmBtnText: "Ok")
-            }
-        }
-    }
-    
-    func gitStashApply(name: String) {
-        Task {
-            do {
-                let result = try await GitStashHelper.apply(LocalRepoDir: repoPath, name: name)
-                if !result.isEmpty {
-                    refreshAction()
-                    if result != "success" {
-                        _ = showAlert(title: "", msg: result, ConfirmBtnText: "OK")
-                    }
-                }
-            } catch let error {
-                let msg = getErrorMessage(etype: error as! GitError)
-                _ = showAlert(title: "Error", msg: msg, ConfirmBtnText: "Ok")
-            }
-        }
-    }
-    
-    func gitStashDrop(name: String) {
-        Task {
-            do {
-                let result = try await GitStashHelper.drop(LocalRepoDir: repoPath, name: name)
-                if !result.isEmpty {
-                    refreshAction()
-                    if result != "success" {
-                        _ = showAlert(title: "", msg: result, ConfirmBtnText: "OK")
-                    }
-                }
-            } catch let error {
-                let msg = getErrorMessage(etype: error as! GitError)
-                _ = showAlert(title: "Error", msg: msg, ConfirmBtnText: "Ok")
-            }
         }
     }
 }
 
+
+func gitStashPop(repoPath: String) {
+    Task {
+        do {
+            let result = try await GitStashHelper.pop(LocalRepoDir: repoPath)
+            if !result.isEmpty {
+                isRefreshStashList += 1
+            }
+        } catch let error {
+            let msg = getErrorMessage(etype: error as! GitError)
+            _ = showAlert(title: "Error", msg: msg, ConfirmBtnText: "Ok")
+        }
+    }
+}
+
+func gitStashApply(repoPath: String, name: String) {
+    Task {
+        do {
+            let result = try await GitStashHelper.apply(LocalRepoDir: repoPath, name: name)
+            if !result.isEmpty {
+                isRefreshStashList += 1
+                if result != "success" {
+                    _ = showAlert(title: "", msg: result, ConfirmBtnText: "OK")
+                }
+            }
+        } catch let error {
+            let msg = getErrorMessage(etype: error as! GitError)
+            _ = showAlert(title: "Error", msg: msg, ConfirmBtnText: "Ok")
+        }
+    }
+}
+
+func gitStashDrop(repoPath: String, name: String) {
+    Task {
+        do {
+            let result = try await GitStashHelper.drop(LocalRepoDir: repoPath, name: name)
+            if !result.isEmpty {
+                isRefreshStashList += 1
+                if result != "success" {
+                    _ = showAlert(title: "", msg: result, ConfirmBtnText: "OK")
+                }
+            }
+        } catch let error {
+            let msg = getErrorMessage(etype: error as! GitError)
+            _ = showAlert(title: "Error", msg: msg, ConfirmBtnText: "Ok")
+        }
+    }
+}
 
 struct git_stash_view_Previews: PreviewProvider {
     static var previews: some View {
