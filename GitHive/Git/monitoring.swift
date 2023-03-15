@@ -22,6 +22,7 @@ class GitObserverMonitoring: NSObject, NSFilePresenter, ObservableObject {
     @Published var monitoring_git_pull: Int = 0
     @Published var monitoring_git_push: Int = 0
     @Published var monitoring_git_ci: Int = 0
+    @Published var monitoring_git_ref: Int = 0
     
     var last_fetch_time: Int64 = 0
     
@@ -82,6 +83,11 @@ class GitObserverMonitoring: NSObject, NSFilePresenter, ObservableObject {
         if fpath.contains(".git/refs/remotes/") {
             DispatchQueue.main.async {
                 self.monitoring_git_push += 1
+            }
+        }
+        if fpath.contains(".git/refs/tags/") {
+            DispatchQueue.main.async {
+                self.monitoring_git_ref += 1
             }
         }
     }

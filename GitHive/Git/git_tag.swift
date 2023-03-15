@@ -33,24 +33,23 @@ class GitTagHelper: runGit {
     }
     
     // Tag：删除
-    static func DeleteAsync(LocalRepoDir: String, name: String, DeleteType: String, completion: @escaping (Bool) -> Void) {
+    static func deleteAsync(LocalRepoDir: String, name: String, DeleteType: String) async throws -> String {
         var cmd: [String] = ["tag", "-d", name]
         if DeleteType == "Remote" {
             cmd = ["push", "origin", "--delete", name]
         }
-        runGit.executeGitAsync(at: LocalRepoDir, command: cmd) { output in
-            guard let output = output else {
-                completion(false)
-                return
-            }
-            let lines = output.replacingOccurrences(of: "\n", with: "")
-            print("Git Tag删除结果: ", output)
-            if lines.contains("Deleted tag") || lines.contains("- [deleted]") {
-                completion(true)
-            } else {
-                _ = showAlertOnlyPrompt(msgType: "warning", title: "", msg: lines, ConfirmBtnText: "OK")
-                completion(false)
-            }
+        
+        let output = try await executeGitAsync2(at: LocalRepoDir, command: cmd)
+        guard let output = output else {
+            throw GitError.gitRunFailed
+        }
+        //print("Git Tag删除结果: ", output)
+        
+        let lines = output.replacingOccurrences(of: "\n", with: "")
+        if lines.contains("Deleted tag") || lines.contains("- [deleted]") {
+            return "success"
+        } else {
+            return output
         }
     }
 }

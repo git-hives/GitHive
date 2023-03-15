@@ -7,6 +7,8 @@
 
 import SwiftUI
 
+fileprivate var isRefreshTagsList: Int = 0
+
 struct git_tags_view: View {
     @EnvironmentObject var GitObservable: GitObservable
     
@@ -41,8 +43,18 @@ struct git_tags_view: View {
             }
             
         }
-        .onChange(of: repoPath) { newValue in
+        .onChange(of: repoPath) { value in
             DispatchQueue.main.asyncAfter(deadline: .now() + 1) {
+                getGitAllTagsList(repoPath: repoPath)
+            }
+        }
+        .onChange(of: GitObservable.monitoring_git_ref) { value in
+            DispatchQueue.main.asyncAfter(deadline: .now() + 1) {
+                getGitAllTagsList(repoPath: repoPath)
+            }
+        }
+        .onChange(of: isRefreshTagsList) { value in
+            DispatchQueue.main.asyncAfter(deadline: .now() + 0.5) {
                 getGitAllTagsList(repoPath: repoPath)
             }
         }
@@ -65,9 +77,7 @@ struct git_tags_view: View {
         Section {
             if !iconFoldLocal {
                 ForEach(tagsList, id:\.id) { item in
-                    show_tag(repoPath: repoPath, item: item, selectedItemId: $selectedItemId, hoverItemId: $hoverItemId, refreshAction: {
-                        getGitAllTagsList(repoPath: repoPath)
-                    })
+                    show_tag(repoPath: repoPath, item: item, selectedItemId: $selectedItemId, hoverItemId: $hoverItemId)
                 }
             }
         }
@@ -87,11 +97,9 @@ struct git_tags_view: View {
                     tList.append(gitTagItem(name: i))
                 }
             }
-            if !tList.isEmpty {
-                DispatchQueue.main.async {
-                    self.tagsList = tList
-                    self.rawTagsList = tList
-                }
+            DispatchQueue.main.async {
+                self.tagsList = tList
+                self.rawTagsList = tList
             }
         }
     }
@@ -117,7 +125,6 @@ private struct show_tag: View {
     
     @Binding var selectedItemId: String
     @Binding var hoverItemId: String
-    var refreshAction: () -> Void
     
     @State private var showCreateBranchWindow: Bool = false
     @State private var selectedBranchName: String = ""
@@ -162,11 +169,11 @@ private struct show_tag: View {
                 Divider()
                 Button("Delete \(item.name)", action: {
                     self.selectedItemId = item.id
-                    tagDelete(name: item.name, DeleteType: "Local")
+                    getTagDelete(repoPath: repoPath, name: item.name, DeleteType: "Local")
                 })
                 Button("Delete \(item.name) from origin", action: {
                     self.selectedItemId = item.id
-                    tagDelete(name: item.name, DeleteType: "Remote")
+                    getTagDelete(repoPath: repoPath, name: item.name, DeleteType: "Remote")
                 })
                 Divider()
             }
@@ -177,22 +184,32 @@ private struct show_tag: View {
         .sheet(isPresented: $showCreateBranchWindow) {
             git_branch_create_view(projectPath: repoPath, userSelectedRef: selectedBranchName, isShowWindow: $showCreateBranchWindow)
         }
-    }
+    }  
+}
+
+
+// 删除本地标签和远程标签
+func getTagDelete(repoPath: String, name: String, DeleteType: String) {
     
-    // 删除本地标签和远程标签
-    func tagDelete(name: String, DeleteType: String) {
-        let isDelete = showAlert(title: "Delete \(DeleteType) Tag \(name) ?", msg: "", ConfirmBtnText: "Delete")
-        if !isDelete {
-            return
-        }
-        GitTagHelper.DeleteAsync(LocalRepoDir: repoPath, name: name, DeleteType: DeleteType) { output in
-            if output == true {
-                refreshAction()
+    Task {
+        do {
+            let isDelete = showAlert(title: "Delete \(DeleteType) Tag \(name) ?", msg: "", ConfirmBtnText: "Delete")
+            if !isDelete {
+                return
             }
+            let result = try await GitTagHelper.deleteAsync(LocalRepoDir: repoPath, name: name, DeleteType: DeleteType)
+            if !result.isEmpty {
+                isRefreshTagsList += 1
+                if result != "success" {
+                    _ = showAlert(title: "", msg: result, ConfirmBtnText: "OK")
+                }
+            }
+        } catch let error {
+            let msg = getErrorMessage(etype: error as! GitError)
+            _ = showAlert(title: "Error", msg: msg, ConfirmBtnText: "Ok")
         }
     }
 }
-
 
 struct git_tags_view_Previews: PreviewProvider {
     static var previews: some View {

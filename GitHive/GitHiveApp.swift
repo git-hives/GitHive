@@ -24,6 +24,7 @@ class GitObservable: ObservableObject {
     @Published var monitoring_git_push: Int = 0
     @Published var monitoring_git_HEAD: Int = 0
     @Published var monitoring_git_ci: Int = 0
+    @Published var monitoring_git_ref: Int = 0
 }
 
 
@@ -92,6 +93,9 @@ struct GitHiveApp: App {
                 }
                 .onChange(of: gitMoitor.monitoring_project_file) { value in
                     appDelegate.gitObservable.monitoring_project_file = value
+                }
+                .onChange(of: gitMoitor.monitoring_git_ref) { value in
+                    appDelegate.gitObservable.monitoring_git_ref = value
                 }
         }
         .commands {
