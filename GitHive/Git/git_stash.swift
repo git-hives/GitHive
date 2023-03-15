@@ -15,11 +15,19 @@ struct gitStashItem: Identifiable {
 
 class GitStashHelper: runGit {
     
-    // 分支：获取Stash列表
+    static func matchStashReference(_ str: String) -> String? {
+        let regex = try! NSRegularExpression(pattern: #"stash@\{\d+\}"#)
+        if let match = regex.firstMatch(in: str, range: NSRange(str.startIndex..., in: str)) {
+            return (str as NSString).substring(with: match.range)
+        }
+        return nil
+    }
+    
+    // stash：获取Stash列表
     static func getStashListAsync(at LocalRepoDir: String, completion: @escaping ([String]) -> Void)  {
         var result: [String] = []
         let cmd: [String] = ["stash", "list"]
-        runGit.executeGitAsync(at: LocalRepoDir, command: cmd) { output in
+        executeGitAsync(at: LocalRepoDir, command: cmd) { output in
             guard let output = output else {
                 completion(result)
                 return
@@ -29,6 +37,64 @@ class GitStashHelper: runGit {
                 String($0)
             }
             completion(result)
+        }
+    }
+    
+    // stash: pop
+    static func pop(LocalRepoDir: String) async throws -> String {
+        let cmd: [String] = ["stash", "pop"]
+        let output = try await executeGitAsync2(at: LocalRepoDir, command: cmd)
+        guard let output = output else {
+            throw GitError.gitRunFailed
+        }
+        print("git stash pop结果：", output)
+        if output.hasPrefix("Dropped refs/stash@{") {
+            return "success"
+        } else {
+            return output
+        }
+    }
+    
+    // stash: apply
+    static func apply(LocalRepoDir: String, name: String) async throws -> String {
+        var stashName = name
+        if !name.isEmpty {
+            stashName = matchStashReference(name) ?? name
+        }
+        
+        let cmd: [String] = ["stash", "apply", stashName]
+        let output = try await executeGitAsync2(at: LocalRepoDir, command: cmd)
+        guard let output = output else {
+            throw GitError.gitRunFailed
+        }
+        if output.hasPrefix("On branch") {
+            return "success"
+        } else {
+            return output
+        }
+    }
+    
+    // stash: pop
+    static func drop(LocalRepoDir: String, name: String) async throws -> String {
+        var stashName = name
+        if !name.isEmpty {
+            if let matchResult = matchStashReference(name) {
+                stashName = matchResult
+            }
+        }
+        
+        let cmd: [String] = ["stash", "drop", stashName]
+        //print("git Stash drop命令行:", cmd)
+        
+        let output = try await executeGitAsync2(at: LocalRepoDir, command: cmd)
+        guard let output = output else {
+            throw GitError.gitRunFailed
+        }
+        //print("git Stash drop结果:", output)
+        if output.hasPrefix("Dropped \(stashName)") {
+            return "success"
+        } else {
+            return output
         }
     }
 }

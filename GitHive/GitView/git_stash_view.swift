@@ -37,13 +37,18 @@ struct git_stash_view: View {
         }
         .onAppear() {
             DispatchQueue.main.asyncAfter(deadline: .now() + 0.2) {
-                getGitAllStashList(repoPath: repoPath)
+                getGitAllStashList()
             }
             
         }
         .onChange(of: repoPath) { newValue in
             DispatchQueue.main.asyncAfter(deadline: .now() + 1) {
-                getGitAllStashList(repoPath: repoPath)
+                getGitAllStashList()
+            }
+        }
+        .onChange(of: GitObservable.monitoring_git_index) { value in
+            DispatchQueue.main.asyncAfter(deadline: .now() + 1) {
+                getGitAllStashList()
             }
         }
     }
@@ -60,12 +65,14 @@ struct git_stash_view: View {
             }
     }
     
-    // 视图：显示tag
+    // 视图：显示stash
     var view_stash: some View {
         Section {
             if !iconFoldLocal {
                 ForEach(stashList, id:\.id) { item in
-                    show_stash(item: item, selectedItemId: $selectedItemId, hoverItemId: $hoverItemId)
+                    show_stash(repoPath: repoPath, item: item, selectedItemId: $selectedItemId, hoverItemId: $hoverItemId, refreshAction: {
+                        getGitAllStashList()
+                    })
                 }
             }
         }
@@ -73,13 +80,13 @@ struct git_stash_view: View {
     }
     
     
-    // tag列表：获取git tag列表
-    func getGitAllStashList(repoPath: String) {
+    // stash列表：获取git stash列表
+    func getGitAllStashList() {
         if repoPath.isEmpty {
             return
         }
         
-        // 获取tag
+        // 获取stash
         var tList: [gitStashItem] = []
         GitStashHelper.getStashListAsync(at: repoPath) { output in
             if !output.isEmpty {
@@ -87,16 +94,14 @@ struct git_stash_view: View {
                     tList.append(gitStashItem(name: i))
                 }
             }
-            if !tList.isEmpty {
-                DispatchQueue.main.async {
-                    self.stashList = tList
-                    self.rawStashList = tList
-                }
+            DispatchQueue.main.async {
+                self.stashList = tList
+                self.rawStashList = tList
             }
         }
     }
     
-    // 过滤tag
+    // 过滤stash
     func filterStash() {
         let fileterText = self.searchText.trimming()
         
@@ -113,10 +118,12 @@ struct git_stash_view: View {
 
 // 视图：stash
 private struct show_stash: View {
+    var repoPath: String
     var item: gitStashItem
     
     @Binding var selectedItemId: String
     @Binding var hoverItemId: String
+    var refreshAction: () -> Void
     
     var body: some View {
         VStack(alignment: .leading) {
@@ -139,16 +146,64 @@ private struct show_stash: View {
         }
         .contextMenu {
             Button("Pop Stash", action: {
-                
+                gitStashPop()
             })
             Divider()
             Button("Apply Stash", action: {
-
+                gitStashApply(name: item.name)
             })
             Divider()
             Button("Drop Stash", action: {
-
+                gitStashDrop(name: item.name)
             })
+        }
+    }
+    
+    func gitStashPop() {
+        Task {
+            do {
+                let result = try await GitStashHelper.pop(LocalRepoDir: repoPath)
+                if !result.isEmpty {
+                    refreshAction()
+                }
+            } catch let error {
+                let msg = getErrorMessage(etype: error as! GitError)
+                _ = showAlert(title: "Error", msg: msg, ConfirmBtnText: "Ok")
+            }
+        }
+    }
+    
+    func gitStashApply(name: String) {
+        Task {
+            do {
+                let result = try await GitStashHelper.apply(LocalRepoDir: repoPath, name: name)
+                if !result.isEmpty {
+                    refreshAction()
+                    if result != "success" {
+                        _ = showAlert(title: "", msg: result, ConfirmBtnText: "OK")
+                    }
+                }
+            } catch let error {
+                let msg = getErrorMessage(etype: error as! GitError)
+                _ = showAlert(title: "Error", msg: msg, ConfirmBtnText: "Ok")
+            }
+        }
+    }
+    
+    func gitStashDrop(name: String) {
+        Task {
+            do {
+                let result = try await GitStashHelper.drop(LocalRepoDir: repoPath, name: name)
+                if !result.isEmpty {
+                    refreshAction()
+                    if result != "success" {
+                        _ = showAlert(title: "", msg: result, ConfirmBtnText: "OK")
+                    }
+                }
+            } catch let error {
+                let msg = getErrorMessage(etype: error as! GitError)
+                _ = showAlert(title: "Error", msg: msg, ConfirmBtnText: "Ok")
+            }
         }
     }
 }

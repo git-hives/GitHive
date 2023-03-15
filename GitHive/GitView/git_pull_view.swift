@@ -122,7 +122,6 @@ struct git_pull: View {
         Task {
             do {
                 let result = try await GitFetchHelper.fetchAsync(LocalRepoDir: repoDir, param: .fetch)
-                print(".....-", result)
                 get_pull_behind()
                 if ((result?.contains("error")) != nil) {
                     _ = showAlert(title: "Error", msg: result!, ConfirmBtnText: "Ok")

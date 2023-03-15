@@ -10,22 +10,24 @@ import Foundation
 import SwiftUI
 
 func showAlert(title: String, msg: String, ConfirmBtnText: String, CancelBtnText: String = "Cancel") -> Bool {
-    let alert = NSAlert()
-    if title != "" {
-        alert.messageText = title
+    var result = false
+    DispatchQueue.main.sync {
+        let alert = NSAlert()
+        if title != "" {
+            alert.messageText = title
+        }
+        alert.informativeText = msg
+        alert.addButton(withTitle: ConfirmBtnText)
+        alert.addButton(withTitle: CancelBtnText)
+        
+        let response = alert.runModal()
+        if response == .alertFirstButtonReturn {
+            result = true
+        }
     }
-    alert.informativeText = msg
-    alert.addButton(withTitle: ConfirmBtnText)
-    alert.addButton(withTitle: CancelBtnText)
-    
-    let response = alert.runModal()
-    if response == .alertFirstButtonReturn {
-        return true
-    } else if response == .alertSecondButtonReturn {
-        return false
-    }
-    return false
+    return result
 }
+
 
 func showAlertOnlyPrompt(msgType: String, title: String, msg: String, ConfirmBtnText: String) -> Bool {
     let alert = NSAlert()

@@ -61,7 +61,7 @@ class GitObserverMonitoring: NSObject, NSFilePresenter, ObservableObject {
                 self.monitoring_git_HEAD += 1
             }
         }
-        if relativePath == ".git/index" {
+        if relativePath == ".git/index" || relativePath == ".git/refs/stash" {
             DispatchQueue.main.async {
                 self.monitoring_git_index += 1
             }
