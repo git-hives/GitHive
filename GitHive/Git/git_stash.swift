@@ -24,20 +24,18 @@ class GitStashHelper: runGit {
     }
     
     // stash：获取Stash列表
-    static func getStashListAsync(at LocalRepoDir: String, completion: @escaping ([String]) -> Void)  {
+    static func get(at LocalRepoDir: String)  async throws -> [String] {
         var result: [String] = []
         let cmd: [String] = ["stash", "list"]
-        executeGitAsync(at: LocalRepoDir, command: cmd) { output in
-            guard let output = output else {
-                completion(result)
-                return
-            }
-            let lines = output.split(separator: "\n")
-            result = lines.map {
-                String($0)
-            }
-            completion(result)
+        let output = try await executeGitAsync2(at: LocalRepoDir, command: cmd)
+        guard let output = output else {
+            throw GitError.gitRunFailed
         }
+        let lines = output.split(separator: "\n")
+        result = lines.map {
+            String($0)
+        }
+        return result
     }
     
     // stash: pop

@@ -85,18 +85,22 @@ struct git_stash_view: View {
         if repoPath.isEmpty {
             return
         }
-        
-        // 获取stash
-        var tList: [gitStashItem] = []
-        GitStashHelper.getStashListAsync(at: repoPath) { output in
-            if !output.isEmpty {
-                for i in output {
-                    tList.append(gitStashItem(name: i))
+        Task {
+            do {
+                var tList: [gitStashItem] = []
+                let output = try await GitStashHelper.get(at: repoPath)
+                if !output.isEmpty {
+                    for i in output {
+                        tList.append(gitStashItem(name: i))
+                    }
                 }
-            }
-            DispatchQueue.main.async {
-                self.stashList = tList
-                self.rawStashList = tList
+                DispatchQueue.main.async {
+                    self.stashList = tList
+                    self.rawStashList = tList
+                }
+            } catch let error {
+                let msg = getErrorMessage(etype: error as! GitError)
+                _ = showAlert(title: "Error", msg: msg, ConfirmBtnText: "Ok")
             }
         }
     }
