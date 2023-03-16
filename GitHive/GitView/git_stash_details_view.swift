@@ -8,37 +8,43 @@
 import SwiftUI
 
 struct git_stash_details_view: View {
-    var repoDir: String = ""
-    var stashName: String = ""
+    @EnvironmentObject var GitObservable: GitObservable
+    
+    var repoPath: String {
+        GitObservable.GitProjectPathProperty
+    }
+    
+    var activeStashName: String {
+        GitObservable.stash_view_active_stash
+    }
     
     var body: some View {
         VStack {
-            if stashName == "" {
+            if activeStashName == "" {
                 EmptyView()
             } else {
                 show_details
             }
-            Text("xxxx \(stashName)")
+        }
+        .onChange(of: GitObservable.stash_view_active_stash) { value in
+            getStashDetails()
         }
     }
     
     var show_details: some View {
         ScrollView(.vertical, showsIndicators: true) {
-            Text("xxx")
-            Text(repoDir)
-            Text(stashName)
+            Text(activeStashName)
         }
     }
     
     func getStashDetails() {
-        if stashName == "" || repoDir == "" {
+        if activeStashName == "" || repoPath == "" {
             return
         }
         Task {
             do {
-                
-                let result = try await GitStashHelper.showDetails(LocalRepoDir: repoDir, name: stashName)
-                print(result)
+                let result = try await GitStashHelper.showDetails(LocalRepoDir: repoPath, name: activeStashName)
+//                print(result)
             } catch let error {
                 
             }

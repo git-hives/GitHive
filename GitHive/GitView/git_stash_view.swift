@@ -17,6 +17,7 @@ struct git_stash_view: View {
     
     @State private var searchText: String = ""
     
+    @State private var selectedStashName: String = ""
     @State private var selectedItemId: String = ""
     @State private var selectedItem: String = ""
     
@@ -56,6 +57,9 @@ struct git_stash_view: View {
         .onChange(of: isRefreshStashList) { value in
             getGitAllStashList()
         }
+        .onChange(of: selectedStashName) { value in
+            GitObservable.stash_view_active_stash = value
+        }
     }
     
     // 视图：过滤
@@ -75,7 +79,7 @@ struct git_stash_view: View {
         Section {
             if !iconFoldLocal {
                 ForEach(stashList, id:\.id) { item in
-                    show_stash(repoPath: repoPath, item: item, selectedItemId: $selectedItemId, hoverItemId: $hoverItemId)
+                    show_stash(repoPath: repoPath, item: item,  selectedStashName: $selectedStashName, selectedItemId: $selectedItemId, hoverItemId: $hoverItemId)
                 }
             }
         }
@@ -128,22 +132,15 @@ private struct show_stash: View {
     var repoPath: String
     var item: gitStashItem
     
+    @Binding var selectedStashName: String
     @Binding var selectedItemId: String
     @Binding var hoverItemId: String
     
     var body: some View {
         VStack(alignment: .leading) {
             HStack {
-//                Text(item.name)
-//                    .foregroundColor(selectedItemId == item.id ? .white : .primary)
-                Button(action: {
-                    print("----------", repoPath, item.name)
-                    git_stash_details_view(repoDir: repoPath, stashName: item.name)
-                }, label: {
-                    Text(item.name)
-                        .foregroundColor(selectedItemId == item.id ? .white : .primary)
-                })
-                .buttonStyle(.plain)
+                Text(item.name)
+                    .foregroundColor(selectedItemId == item.id ? .white : .primary)
                 Spacer()
             }
         }
@@ -153,6 +150,7 @@ private struct show_stash: View {
         .background(selectedItemId == item.id  ? Color.blue.opacity(0.95) : Color.clear)
         .cornerRadius(3)
         .onTapGesture {
+            self.selectedStashName = item.name
             self.selectedItemId = item.id
         }
         .onHover { isHovered in

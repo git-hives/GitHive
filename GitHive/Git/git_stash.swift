@@ -12,6 +12,42 @@ struct gitStashItem: Identifiable {
     let name: String
 }
 
+func isDiffGitLine(_ line: String) -> Bool {
+    let pattern = "^diff --git.*\n$"
+    if let range = line.range(of: pattern, options: .regularExpression) {
+        return range.lowerBound == line.startIndex && range.upperBound == line.endIndex
+    }
+    return false
+}
+
+// 解析 git stash show -p stash@{0}的输出
+func parseDiffOutput(_ output: String) -> [(filename: String, content: String, addedLines: Int, deletedLines: Int)] {
+    let pattern = #"diff --git a\/(?<filename>[\w\.]+) b\/\1\n.*?\n@@ -(\d+)(?:,(\d+))? \+(\d+)(?:,(\d+))? @@.*?\n(?<content>[\s\S]+?)(?=diff|$)"#
+    let regex = try! NSRegularExpression(pattern: pattern, options: [])
+    let matches = regex.matches(in: output, options: [], range: NSRange(output.startIndex..., in: output))
+    return matches.map { match in
+        let filenameRange = match.range(withName: "filename")
+        let filename = String(output[Range(filenameRange, in: output)!])
+        let contentRange = match.range(withName: "content")
+        let content = String(output[Range(contentRange, in: output)!])
+        let addedLines = match.range(at: 3).length
+        let deletedLines = match.range(at: 5).length
+        return (filename: filename, content: content, addedLines: addedLines, deletedLines: deletedLines)
+    }
+}
+
+func splitString(_ str: String, delimiter: String) -> [String] {
+    let components = str.components(separatedBy: delimiter)
+    guard let lastComponent = components.last, components.count > 1 else {
+        return [str]
+    }
+    let lastIndex = str.index(str.endIndex, offsetBy: -lastComponent.count - delimiter.count)
+    var prefix = str[..<lastIndex]
+    if prefix.first == " " {
+        prefix.removeFirst()
+    }
+    return [String(prefix)] + [lastComponent]
+}
 
 class GitStashHelper: runGit {
     
@@ -96,6 +132,38 @@ class GitStashHelper: runGit {
         }
     }
     
+    
+    // stash: stash summary
+    static func showStashStat(LocalRepoDir: String, name: String) async throws -> (statFiles: [[String]], statSummary: String) {
+        var statFiles: [[String]] = []
+        var statSummary: String = ""
+        
+        let cmd: [String] = ["stash", "show", "--stat", name]
+        let output = try await executeGitAsync2(at: LocalRepoDir, command: cmd)
+        guard let output = output else {
+            throw GitError.gitRunFailed
+        }
+        if output.isEmpty {
+            return (statFiles, statSummary)
+        }
+        
+        let result = output.split(separator: "\n")
+        if !result.isEmpty {
+            let total = result.count
+            for (index, value) in result.enumerated() {
+                if index < total{
+                    let tmp = splitString(String(value), delimiter: " | ")
+                    statFiles.append(tmp)
+                }
+                if index + 1 == total {
+                    statSummary = String(value)
+                }
+            }
+        }
+        
+        return (statFiles, statSummary)
+    }
+    
     // stash: details
     static func showDetails(LocalRepoDir: String, name: String) async throws -> String {
         var stashName = name
@@ -105,12 +173,21 @@ class GitStashHelper: runGit {
             }
         }
         
+        let stashStat = try await showStashStat(LocalRepoDir: LocalRepoDir, name: stashName)
+        print(stashStat)
+        
         let cmd: [String] = ["stash", "show", "-p", stashName]
         let output = try await executeGitAsync2(at: LocalRepoDir, command: cmd)
-        print(output)
         guard let output = output else {
             throw GitError.gitRunFailed
         }
+        if output.isEmpty {
+            return "error"
+        }
+//        let ppp = showStashStat(output)
+//        print(ppp)
+//        print("-----------------------------")
+//        print(output)
 //        //print("git Stash drop结果:", output)
 //        if output.hasPrefix("Dropped \(stashName)") {
 //            return "success"

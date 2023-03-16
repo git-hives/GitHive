@@ -244,12 +244,12 @@
 				634E5C9C29BC2D1800A2C75B /* git_logs_view.swift */,
 				634E5CA529BC2D1800A2C75B /* git_pull_view.swift */,
 				634E5C9B29BC2D1800A2C75B /* git_push_view.swift */,
+				63FF605829C20B5A002BCE44 /* git_stash_details_view.swift */,
 				634E5CA229BC2D1800A2C75B /* git_stash_view.swift */,
 				634E5C9E29BC2D1800A2C75B /* git_tags_view.swift */,
 				634E5CA129BC2D1800A2C75B /* toolbar_branch_view.swift */,
 				634E5C9F29BC2D1800A2C75B /* toolbar_projectinfo.swift */,
 				634E5C9A29BC2D1800A2C75B /* welcome_view.swift */,
-				63FF605829C20B5A002BCE44 /* git_stash_details_view.swift */,
 			);
 			path = GitView;
 			sourceTree = "<group>";

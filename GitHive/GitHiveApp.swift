@@ -25,6 +25,9 @@ class GitObservable: ObservableObject {
     @Published var monitoring_git_HEAD: Int = 0
     @Published var monitoring_git_ci: Int = 0
     @Published var monitoring_git_ref: Int = 0
+    
+    
+    @Published var stash_view_active_stash: String = ""
 }
 
 
