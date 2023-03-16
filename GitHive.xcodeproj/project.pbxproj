@@ -11,6 +11,8 @@
 		63124AF029C0A20500123FB3 /* git_pull.swift in Sources */ = {isa = PBXBuildFile; fileRef = 63124AEF29C0A20500123FB3 /* git_pull.swift */; };
 		63124AF229C0A25E00123FB3 /* git_fetch.swift in Sources */ = {isa = PBXBuildFile; fileRef = 63124AF129C0A25E00123FB3 /* git_fetch.swift */; };
 		63124AF429C0BBF900123FB3 /* git_error.swift in Sources */ = {isa = PBXBuildFile; fileRef = 63124AF329C0BBF900123FB3 /* git_error.swift */; };
+		6323158B29C362250000EDFC /* git_tag_details_view.swift in Sources */ = {isa = PBXBuildFile; fileRef = 6323158A29C362250000EDFC /* git_tag_details_view.swift */; };
+		6323158D29C362770000EDFC /* git_log_details_view.swift in Sources */ = {isa = PBXBuildFile; fileRef = 6323158C29C362770000EDFC /* git_log_details_view.swift */; };
 		634E5C7329BC2AAF00A2C75B /* GitHiveApp.swift in Sources */ = {isa = PBXBuildFile; fileRef = 634E5C7229BC2AAF00A2C75B /* GitHiveApp.swift */; };
 		634E5C7529BC2AAF00A2C75B /* Main.swift in Sources */ = {isa = PBXBuildFile; fileRef = 634E5C7429BC2AAF00A2C75B /* Main.swift */; };
 		634E5C7729BC2AB000A2C75B /* Assets.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = 634E5C7629BC2AB000A2C75B /* Assets.xcassets */; };
@@ -61,6 +63,8 @@
 		63124AEF29C0A20500123FB3 /* git_pull.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = git_pull.swift; sourceTree = "<group>"; };
 		63124AF129C0A25E00123FB3 /* git_fetch.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = git_fetch.swift; sourceTree = "<group>"; };
 		63124AF329C0BBF900123FB3 /* git_error.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = git_error.swift; sourceTree = "<group>"; };
+		6323158A29C362250000EDFC /* git_tag_details_view.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = git_tag_details_view.swift; sourceTree = "<group>"; };
+		6323158C29C362770000EDFC /* git_log_details_view.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = git_log_details_view.swift; sourceTree = "<group>"; };
 		634E5C6F29BC2AAF00A2C75B /* GitHive.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = GitHive.app; sourceTree = BUILT_PRODUCTS_DIR; };
 		634E5C7229BC2AAF00A2C75B /* GitHiveApp.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = GitHiveApp.swift; sourceTree = "<group>"; };
 		634E5C7429BC2AAF00A2C75B /* Main.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Main.swift; sourceTree = "<group>"; };
@@ -241,11 +245,13 @@
 				634E5CA729BC2D1800A2C75B /* git_default_view.swift */,
 				634E5C9D29BC2D1800A2C75B /* git_files_details_view.swift */,
 				634E5CA029BC2D1800A2C75B /* git_files_view.swift */,
+				6323158C29C362770000EDFC /* git_log_details_view.swift */,
 				634E5C9C29BC2D1800A2C75B /* git_logs_view.swift */,
 				634E5CA529BC2D1800A2C75B /* git_pull_view.swift */,
 				634E5C9B29BC2D1800A2C75B /* git_push_view.swift */,
 				63FF605829C20B5A002BCE44 /* git_stash_details_view.swift */,
 				634E5CA229BC2D1800A2C75B /* git_stash_view.swift */,
+				6323158A29C362250000EDFC /* git_tag_details_view.swift */,
 				634E5C9E29BC2D1800A2C75B /* git_tags_view.swift */,
 				634E5CA129BC2D1800A2C75B /* toolbar_branch_view.swift */,
 				634E5C9F29BC2D1800A2C75B /* toolbar_projectinfo.swift */,
@@ -343,6 +349,7 @@
 				634E5CA829BC2D1800A2C75B /* welcome_view.swift in Sources */,
 				634E5CD129BC2D5A00A2C75B /* string.swift in Sources */,
 				634E5CCF29BC2D5A00A2C75B /* ui_styles.swift in Sources */,
+				6323158B29C362250000EDFC /* git_tag_details_view.swift in Sources */,
 				634E5CD229BC2D5A00A2C75B /* ui_view.swift in Sources */,
 				63124AF029C0A20500123FB3 /* git_pull.swift in Sources */,
 				634E5CAA29BC2D1800A2C75B /* git_logs_view.swift in Sources */,
@@ -361,6 +368,7 @@
 				634E5C8D29BC2BCB00A2C75B /* menu_Repository.swift in Sources */,
 				634E5CAC29BC2D1800A2C75B /* git_tags_view.swift in Sources */,
 				63124AF429C0BBF900123FB3 /* git_error.swift in Sources */,
+				6323158D29C362770000EDFC /* git_log_details_view.swift in Sources */,
 				634E5C8229BC2B0400A2C75B /* Config.swift in Sources */,
 				634E5CB329BC2D1800A2C75B /* git_pull_view.swift in Sources */,
 				634E5CB029BC2D1800A2C75B /* git_stash_view.swift in Sources */,

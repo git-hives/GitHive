@@ -28,6 +28,8 @@ class GitObservable: ObservableObject {
     
     
     @Published var stash_view_active_stash: String = ""
+    @Published var tag_view_active_tag: String = ""
+    @Published var log_view_active_hash: String = ""
 }
 
 
