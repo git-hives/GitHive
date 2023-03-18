@@ -133,31 +133,60 @@ class GitStashHelper: runGit {
     }
     
     
-    // stash: stash summary
-    static func showStashStat(LocalRepoDir: String, name: String) async throws -> (statFiles: [[String]], statSummary: String) {
-        var statFiles: [[String]] = []
-        var statSummary: String = ""
+    // stash: 获取stash汇总信息
+    // git show --numstat stash@{0} --pretty=format:'{"Commit Hash": "%H", "Author":"%an <%ae>", "AuthorDate": "%ad", "Parents": "%p", "Tree": "%T", "Message": "%s"}'
+    static func showStashStat(LocalRepoDir: String, name: String) async throws -> (statFiles: [stashFileItem], statSummary: Dictionary<String, String>) {
         
-        let cmd: [String] = ["stash", "show", "--stat", name]
+        var statFiles: [stashFileItem] = []
+        var statSummary: Dictionary<String, String> =  ["Tree": "", "Commit Hash": "", "AuthorDate": "", "Message": "", "Parents": "", "Author": ""]
+        
+        var stashName = name
+        if !name.isEmpty {
+            if let matchResult = matchStashReference(name) {
+                stashName = matchResult
+            }
+        }
+        
+        let cmd: [String] = ["show", "--numstat", stashName, "--pretty=format:'{\"Commit Hash\": \"%H\", \"Author\":\"%an <%ae>\", \"AuthorDate\": \"%ad\", \"Parents\": \"%p\", \"Tree\": \"%T\", \"Message\": \"%s\"}'"]
+        
         let output = try await executeGitAsync2(at: LocalRepoDir, command: cmd)
         guard let output = output else {
             throw GitError.gitRunFailed
         }
+        
         if output.isEmpty {
             return (statFiles, statSummary)
         }
-        
+        // 把命令行输出结果从字符串转成数组
         let result = output.split(separator: "\n")
-        if !result.isEmpty {
-            let total = result.count
-            for (index, value) in result.enumerated() {
-                if index < total{
-                    let tmp = splitString(String(value), delimiter: " | ")
-                    statFiles.append(tmp)
-                }
-                if index + 1 == total {
-                    statSummary = String(value)
-                }
+        if result.count < 2 {
+            return (statFiles, statSummary)
+        }
+        
+        // 取数组第一项，即stash日期作者等信息
+        let rawSummaryInfo = result[0]
+        // 获取stash中的文件列表
+        let rawFileList = result[1...]
+        
+        // 获取stash，包含日期、commitHash、作者等信息
+        do {
+            let lineWithoutQuotes = rawSummaryInfo.replacingOccurrences(of: "\'", with: "")
+            guard let data = lineWithoutQuotes.data(using: .utf8) else {
+                throw GitError.gitOutputParsingFailed
+            }
+            guard let dictionary = try JSONSerialization.jsonObject(with: data, options: []) as? [String: String] else {
+                throw GitError.gitOutputParsingFailed
+            }
+            statSummary = dictionary
+        } catch _ {
+            throw GitError.gitOutputParsingFailed
+        }
+        
+        // 解析文件列表
+        for line in rawFileList {
+            let info = line.split(separator: "\t")
+            if info.count >= 3 {
+                statFiles.append(stashFileItem(filename: String(info[2]), add_line: String(info[0]), del_line: String(info[1])))
             }
         }
         
@@ -173,9 +202,6 @@ class GitStashHelper: runGit {
             }
         }
         
-        let stashStat = try await showStashStat(LocalRepoDir: LocalRepoDir, name: stashName)
-        print(stashStat)
-        
         let cmd: [String] = ["stash", "show", "-p", stashName]
         let output = try await executeGitAsync2(at: LocalRepoDir, command: cmd)
         guard let output = output else {
@@ -183,6 +209,31 @@ class GitStashHelper: runGit {
         }
         if output.isEmpty {
             return "error"
+        }
+        let input = """
+        diff --git a/App.vue b/App.vue
+        index 99f6e28..41e77c2 100644
+        --- a/App.vue
+        +++ b/App.vue
+        @@ -7,11 +7,10 @@
+                     console.log('App Show')
+                 },
+                 onHide: function() {
+        -            console.log('App Hide')
+        +            console.log('xxxApp Hide')
+                 }
+             }
+         </script>
+         
+         <style>
+        -    /*每个页面公共css */
+         </style>
+        """
+        if let diff = parseGitDiff(input) {
+            print(diff.oldFile) // "a/App.vue"
+            print(diff.newFile) // "b/App.vue"
+            print(diff.hunks.count) // 1
+            print(diff.hunks[0].lines.count) // 6
         }
 //        let ppp = showStashStat(output)
 //        print(ppp)

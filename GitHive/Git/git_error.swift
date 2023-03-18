@@ -12,6 +12,7 @@ enum GitError: Error {
     case gitPathNotFound
     case changeGitDirectoryFailed
     case gitRunFailed
+    case gitOutputParsingFailed
 }
 
 func getErrorMessage(etype: GitError) -> String {
@@ -24,5 +25,7 @@ func getErrorMessage(etype: GitError) -> String {
         return "Could not find the git command line tool path."
     case .preCheckFailed:
         return "Git environment check failed."
+    case .gitOutputParsingFailed:
+        return "Git Output parsing Failed."
     }
 }
