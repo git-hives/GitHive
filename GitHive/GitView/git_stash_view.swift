@@ -166,7 +166,7 @@ private struct show_stash: View {
             })
             Divider()
             Button("Drop Stash", action: {
-                gitStashDrop(repoPath: repoPath, name: item.name)
+                gitStashDrop(repoPath: repoPath, name: item.name, selectedStashName: $selectedStashName)
             })
         }
     }
@@ -204,14 +204,22 @@ func gitStashApply(repoPath: String, name: String) {
     }
 }
 
-func gitStashDrop(repoPath: String, name: String) {
+func gitStashDrop(repoPath: String, name: String, selectedStashName: Binding<String>) {
     Task {
+        let msg_for_drop = "Are you sure you want to delete the '\(name)'?"
+        let isDelete: Bool = showAlert(title: "Confirm Drop", msg: msg_for_drop, ConfirmBtnText: "Ok")
+        if !isDelete {
+            return
+        }
+        
         do {
             let result = try await GitStashHelper.drop(LocalRepoDir: repoPath, name: name)
             if !result.isEmpty {
                 isRefreshStashList += 1
                 if result != "success" {
                     _ = showAlert(title: "", msg: result, ConfirmBtnText: "OK")
+                } else {
+                    selectedStashName.wrappedValue = ""
                 }
             }
         } catch let error {

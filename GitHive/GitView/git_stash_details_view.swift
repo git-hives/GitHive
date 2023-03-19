@@ -38,7 +38,14 @@ struct git_stash_details_view: View {
             }
         }
         .onChange(of: GitObservable.stash_view_active_stash) { value in
-            getStashSummaryInfo()
+            DispatchQueue.main.async {
+                if value != "" {
+                    getStashSummaryInfo()
+                } else {
+                    self.statFiles = []
+                    self.statSummary = [:]
+                }
+            }
         }
     }
     
