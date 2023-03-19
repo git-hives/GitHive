@@ -194,7 +194,7 @@ func getTagDelete(repoPath: String, name: String, DeleteType: String) {
     
     Task {
         do {
-            let isDelete = showAlert(title: "Delete \(DeleteType) Tag \(name) ?", msg: "", ConfirmBtnText: "Delete")
+            let isDelete = await showAlertAsync(title: "Delete \(DeleteType) Tag \(name) ?", msg: "", ConfirmBtnText: "Delete")
             if !isDelete {
                 return
             }
@@ -202,12 +202,12 @@ func getTagDelete(repoPath: String, name: String, DeleteType: String) {
             if !result.isEmpty {
                 isRefreshTagsList += 1
                 if result != "success" {
-                    _ = showAlert(title: "", msg: result, ConfirmBtnText: "OK")
+                    _ = await showAlertAsync(title: "", msg: result, ConfirmBtnText: "OK")
                 }
             }
         } catch let error {
             let msg = getErrorMessage(etype: error as! GitError)
-            _ = showAlert(title: "Error", msg: msg, ConfirmBtnText: "Ok")
+            _ = await showAlertAsync(title: "Error", msg: msg, ConfirmBtnText: "Ok")
         }
     }
 }

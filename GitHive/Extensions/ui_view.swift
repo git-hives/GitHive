@@ -9,21 +9,37 @@ import Cocoa
 import Foundation
 import SwiftUI
 
-func showAlert(title: String, msg: String, ConfirmBtnText: String, CancelBtnText: String = "Cancel") -> Bool {
+@MainActor
+func showAlertAsync(title: String, msg: String, ConfirmBtnText: String, CancelBtnText: String = "Cancel") async -> Bool{
     var result = false
-    DispatchQueue.main.sync {
-        let alert = NSAlert()
-        if title != "" {
-            alert.messageText = title
-        }
-        alert.informativeText = msg
-        alert.addButton(withTitle: ConfirmBtnText)
-        alert.addButton(withTitle: CancelBtnText)
-        
-        let response = alert.runModal()
-        if response == .alertFirstButtonReturn {
-            result = true
-        }
+    let alert = NSAlert()
+    if title != "" {
+        alert.messageText = title
+    }
+    alert.informativeText = msg
+    alert.addButton(withTitle: ConfirmBtnText)
+    alert.addButton(withTitle: CancelBtnText)
+    
+    let response = alert.runModal()
+    if response == .alertFirstButtonReturn {
+        result = true
+    }
+    return result
+}
+
+func showAlert(title: String, msg: String, ConfirmBtnText: String, CancelBtnText: String = "Cancel") -> Bool{
+    var result = false
+    let alert = NSAlert()
+    if title != "" {
+        alert.messageText = title
+    }
+    alert.informativeText = msg
+    alert.addButton(withTitle: ConfirmBtnText)
+    alert.addButton(withTitle: CancelBtnText)
+    
+    let response = alert.runModal()
+    if response == .alertFirstButtonReturn {
+        result = true
     }
     return result
 }

@@ -30,7 +30,7 @@ struct git_stash_details_view: View {
     
     var body: some View {
         VStack(alignment: .leading) {
-            if activeStashName == "" {
+            if statFiles.count == 0 {
                 EmptyView()
             } else {
                 show_summary
@@ -39,7 +39,7 @@ struct git_stash_details_view: View {
         }
         .onChange(of: GitObservable.stash_view_active_stash) { value in
             DispatchQueue.main.async {
-                if value != "" {
+                if value.trimming() != "" {
                     getStashSummaryInfo()
                 } else {
                     self.statFiles = []

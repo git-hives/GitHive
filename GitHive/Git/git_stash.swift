@@ -132,6 +132,18 @@ class GitStashHelper: runGit {
         }
     }
     
+    // stash: clear
+    static func clear(LocalRepoDir: String) async throws -> String {
+        let cmd: [String] = ["stash", "clear"]
+        //print("git Stash drop命令行:", cmd)
+        
+        let output = try await executeGitAsync2(at: LocalRepoDir, command: cmd)
+        guard let output = output else {
+            throw GitError.gitRunFailed
+        }
+        return output
+    }
+    
     
     // stash: 获取stash汇总信息
     // git show --numstat stash@{0} --pretty=format:'{"Commit Hash": "%H", "Author":"%an <%ae>", "AuthorDate": "%ad", "Parents": "%p", "Tree": "%T", "Message": "%s"}'

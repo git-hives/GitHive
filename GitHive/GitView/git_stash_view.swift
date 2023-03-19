@@ -38,11 +38,11 @@ struct git_stash_view: View {
                 view_stash
             }
         }
+        .frame(maxWidth: .infinity, maxHeight: .infinity)
         .onAppear() {
             DispatchQueue.main.asyncAfter(deadline: .now() + 0.2) {
                 getGitAllStashList()
             }
-            
         }
         .onChange(of: repoPath) { newValue in
             DispatchQueue.main.asyncAfter(deadline: .now() + 1) {
@@ -59,6 +59,16 @@ struct git_stash_view: View {
         }
         .onChange(of: selectedStashName) { value in
             GitObservable.stash_view_active_stash = value
+        }
+        .contextMenu {
+            Button("Refresh", action: {
+                getGitAllStashList()
+            })
+            Divider()
+            Button("Stash Clear", action: {
+                gitStashClear(repoPath: repoPath, selectedStashName: $selectedStashName)
+            })
+            .disabled(rawStashList.count == 0)
         }
     }
     
@@ -77,10 +87,8 @@ struct git_stash_view: View {
     // 视图：显示stash
     var view_stash: some View {
         Section {
-            if !iconFoldLocal {
-                ForEach(stashList, id:\.id) { item in
-                    show_stash(repoPath: repoPath, item: item,  selectedStashName: $selectedStashName, selectedItemId: $selectedItemId, hoverItemId: $hoverItemId)
-                }
+            ForEach(stashList, id:\.id) { item in
+                show_stash(repoPath: repoPath, item: item,  selectedStashName: $selectedStashName, selectedItemId: $selectedItemId, hoverItemId: $hoverItemId)
             }
         }
         .padding(.trailing, 7)
@@ -182,7 +190,7 @@ func gitStashPop(repoPath: String) {
             }
         } catch let error {
             let msg = getErrorMessage(etype: error as! GitError)
-            _ = showAlert(title: "Error", msg: msg, ConfirmBtnText: "Ok")
+            _ = await showAlertAsync(title: "Error", msg: msg, ConfirmBtnText: "Ok")
         }
     }
 }
@@ -194,37 +202,62 @@ func gitStashApply(repoPath: String, name: String) {
             if !result.isEmpty {
                 isRefreshStashList += 1
                 if result != "success" {
-                    _ = showAlert(title: "", msg: result, ConfirmBtnText: "OK")
+                    _ = await showAlertAsync(title: "", msg: result, ConfirmBtnText: "OK")
                 }
             }
         } catch let error {
             let msg = getErrorMessage(etype: error as! GitError)
-            _ = showAlert(title: "Error", msg: msg, ConfirmBtnText: "Ok")
+            _ = await showAlertAsync(title: "Error", msg: msg, ConfirmBtnText: "Ok")
         }
     }
 }
 
 func gitStashDrop(repoPath: String, name: String, selectedStashName: Binding<String>) {
     Task {
-        let msg_for_drop = "Are you sure you want to delete the '\(name)'?"
-        let isDelete: Bool = showAlert(title: "Confirm Drop", msg: msg_for_drop, ConfirmBtnText: "Ok")
-        if !isDelete {
-            return
-        }
-        
         do {
+            let msg_for_drop = "Are you sure you want to delete the '\(name)'?"
+            let isDelete: Bool = await showAlertAsync(title: "Confirm Drop", msg: msg_for_drop, ConfirmBtnText: "Ok")
+            if !isDelete {
+                return
+            }
+            
             let result = try await GitStashHelper.drop(LocalRepoDir: repoPath, name: name)
             if !result.isEmpty {
                 isRefreshStashList += 1
                 if result != "success" {
-                    _ = showAlert(title: "", msg: result, ConfirmBtnText: "OK")
+                    _ = await showAlertAsync(title: "", msg: result, ConfirmBtnText: "OK")
                 } else {
                     selectedStashName.wrappedValue = ""
                 }
             }
         } catch let error {
             let msg = getErrorMessage(etype: error as! GitError)
-            _ = showAlert(title: "Error", msg: msg, ConfirmBtnText: "Ok")
+            _ = await showAlertAsync(title: "Error", msg: msg, ConfirmBtnText: "Ok")
+        }
+    }
+}
+
+
+func gitStashClear(repoPath: String, selectedStashName: Binding<String>) {
+
+    Task {
+        do {
+            let msg_for_drop = "Are you sure you want to remove all the stash entries?"
+            let isDelete: Bool = await showAlertAsync(title: "Confirm Remove", msg: msg_for_drop, ConfirmBtnText: "Ok")
+            if !isDelete {
+                return
+            }
+            
+            let result = try await GitStashHelper.clear(LocalRepoDir: repoPath)
+            if result.isEmpty {
+                isRefreshStashList += 1
+                selectedStashName.wrappedValue = " "
+            } else {
+                _ = await showAlertAsync(title: "", msg: result, ConfirmBtnText: "OK")
+            }
+        } catch let error {
+            let msg = getErrorMessage(etype: error as! GitError)
+            _ = await showAlertAsync(title: "Error", msg: msg, ConfirmBtnText: "Ok")
         }
     }
 }
