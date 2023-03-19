@@ -58,17 +58,17 @@ struct Main: View {
                 HStack(alignment: .center) {
                     nav_view
                         .frame(width: 50)
-                        .frame(maxWidth: 50,minHeight: 600, maxHeight: .infinity, alignment: .topTrailing)
+                        .frame(minWidth: 50, maxWidth: 50, minHeight: 700, maxHeight: .infinity, alignment: .topTrailing)
                         .background(.gray.opacity(0.1))
                     
                     middle_view
                         .frame(width: 280)
-                        .frame(minWidth: 280, maxWidth: 280, maxHeight: .infinity, alignment: .topLeading)
+                        .frame(minWidth: 280, maxWidth: 280, minHeight: 700, maxHeight: .infinity, alignment: .topLeading)
                 }
             }
             main_view
                 .padding()
-                .frame(minWidth: 650, maxWidth: .infinity, maxHeight: .infinity, alignment: .topLeading)
+                .frame(minWidth: 700, maxWidth: .infinity, maxHeight: .infinity, alignment: .topLeading)
                 .background(.white)
         }
         .navigationTitle("")

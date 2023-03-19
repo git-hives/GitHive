@@ -218,6 +218,8 @@
 		634E5C8729BC2B8E00A2C75B /* Views */ = {
 			isa = PBXGroup;
 			children = (
+				637736F229C6EEF700D63757 /* view_empty.swift */,
+				634E5C9A29BC2D1800A2C75B /* welcome_view.swift */,
 				634E5CD329BC2E1F00A2C75B /* app-settings-view.swift */,
 			);
 			path = Views;
@@ -246,23 +248,18 @@
 		634E5C8F29BC2C1F00A2C75B /* GitView */ = {
 			isa = PBXGroup;
 			children = (
+				637736FE29C73D8900D63757 /* toolbar */,
+				637736FD29C73D7800D63757 /* push */,
+				637736FC29C73D6E00D63757 /* pull */,
+				637736FB29C73D5D00D63757 /* clone */,
+				637736FA29C73D4B00D63757 /* branch */,
+				637736F929C73D3A00D63757 /* log */,
+				637736F829C73D2D00D63757 /* files */,
+				637736F729C73D2000D63757 /* tag */,
 				637736F429C7309900D63757 /* stash */,
-				634E5CA329BC2D1800A2C75B /* git_branch_create_view.swift */,
-				634E5CA629BC2D1800A2C75B /* git_branch_view.swift */,
-				634E5CA429BC2D1800A2C75B /* git_clone_view.swift */,
 				634E5CA729BC2D1800A2C75B /* git_default_view.swift */,
-				634E5C9D29BC2D1800A2C75B /* git_files_details_view.swift */,
-				634E5CA029BC2D1800A2C75B /* git_files_view.swift */,
-				6323158C29C362770000EDFC /* git_log_details_view.swift */,
-				634E5C9C29BC2D1800A2C75B /* git_logs_view.swift */,
-				634E5CA529BC2D1800A2C75B /* git_pull_view.swift */,
-				634E5C9B29BC2D1800A2C75B /* git_push_view.swift */,
-				6323158A29C362250000EDFC /* git_tag_details_view.swift */,
-				634E5C9E29BC2D1800A2C75B /* git_tags_view.swift */,
 				634E5CA129BC2D1800A2C75B /* toolbar_branch_view.swift */,
 				634E5C9F29BC2D1800A2C75B /* toolbar_projectinfo.swift */,
-				634E5C9A29BC2D1800A2C75B /* welcome_view.swift */,
-				637736F229C6EEF700D63757 /* view_empty.swift */,
 			);
 			path = GitView;
 			sourceTree = "<group>";
@@ -275,6 +272,73 @@
 				637736F529C730DB00D63757 /* git_stash_save_view.swift */,
 			);
 			path = stash;
+			sourceTree = "<group>";
+		};
+		637736F729C73D2000D63757 /* tag */ = {
+			isa = PBXGroup;
+			children = (
+				6323158A29C362250000EDFC /* git_tag_details_view.swift */,
+				634E5C9E29BC2D1800A2C75B /* git_tags_view.swift */,
+			);
+			path = tag;
+			sourceTree = "<group>";
+		};
+		637736F829C73D2D00D63757 /* files */ = {
+			isa = PBXGroup;
+			children = (
+				634E5C9D29BC2D1800A2C75B /* git_files_details_view.swift */,
+				634E5CA029BC2D1800A2C75B /* git_files_view.swift */,
+			);
+			path = files;
+			sourceTree = "<group>";
+		};
+		637736F929C73D3A00D63757 /* log */ = {
+			isa = PBXGroup;
+			children = (
+				6323158C29C362770000EDFC /* git_log_details_view.swift */,
+				634E5C9C29BC2D1800A2C75B /* git_logs_view.swift */,
+			);
+			path = log;
+			sourceTree = "<group>";
+		};
+		637736FA29C73D4B00D63757 /* branch */ = {
+			isa = PBXGroup;
+			children = (
+				634E5CA329BC2D1800A2C75B /* git_branch_create_view.swift */,
+				634E5CA629BC2D1800A2C75B /* git_branch_view.swift */,
+			);
+			path = branch;
+			sourceTree = "<group>";
+		};
+		637736FB29C73D5D00D63757 /* clone */ = {
+			isa = PBXGroup;
+			children = (
+				634E5CA429BC2D1800A2C75B /* git_clone_view.swift */,
+			);
+			path = clone;
+			sourceTree = "<group>";
+		};
+		637736FC29C73D6E00D63757 /* pull */ = {
+			isa = PBXGroup;
+			children = (
+				634E5CA529BC2D1800A2C75B /* git_pull_view.swift */,
+			);
+			path = pull;
+			sourceTree = "<group>";
+		};
+		637736FD29C73D7800D63757 /* push */ = {
+			isa = PBXGroup;
+			children = (
+				634E5C9B29BC2D1800A2C75B /* git_push_view.swift */,
+			);
+			path = push;
+			sourceTree = "<group>";
+		};
+		637736FE29C73D8900D63757 /* toolbar */ = {
+			isa = PBXGroup;
+			children = (
+			);
+			path = toolbar;
 			sourceTree = "<group>";
 		};
 /* End PBXGroup section */
