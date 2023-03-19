@@ -87,7 +87,6 @@ class GitBranchHelper: runGit {
             }
             let lines = output.split(separator: "\n")
             for line in lines {
-                print(line)
                 let lineWithoutQuotes = line.replacingOccurrences(of: "\'", with: "")
                 guard let data = lineWithoutQuotes.data(using: .utf8) else {
                     continue

@@ -63,6 +63,11 @@ struct git_files_view: View {
         .onAppear() {
             showGitStatusFileList()
         }
+        .contextMenu {
+            Button("Refresh", action: {
+                showGitStatusFileList()
+            })
+        }
         .onChange(of: GitRepoLocalPath) { newValue in
             DispatchQueue.main.asyncAfter(deadline: .now() + 0.1) {
                 showGitStatusFileList()

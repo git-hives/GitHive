@@ -59,6 +59,11 @@ struct git_branch_view: View {
         .onChange(of: GitObservable.monitoring_git_push) { value in
             getGitAllBranchList(repoPath: repoPath)
         }
+        .contextMenu {
+            Button("Refresh", action: {
+                getGitAllBranchList(repoPath: repoPath)
+            })
+        }
     }
     
     var view_filter: some View {
