@@ -49,6 +49,11 @@ struct git_logs_view: View {
             }
             
         }
+        .contextMenu {
+            Button("Refresh", action: {
+                getGitLogList(repoPath: repoPath, dataList: $gitLogList)
+            })
+        }
         .onChange(of: repoPath) { newValue in
             DispatchQueue.main.asyncAfter(deadline: .now() + 1) {
                 getGitLogList(repoPath: repoPath, dataList: $gitLogList)
