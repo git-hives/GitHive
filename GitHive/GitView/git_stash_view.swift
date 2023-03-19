@@ -35,7 +35,7 @@ struct git_stash_view: View {
             view_filter
             
             if stashList.isEmpty {
-                view_empty
+                view_empty(text: "No Stash")
             } else {
                 ScrollView(.vertical, showsIndicators: true) {
                     view_stash
@@ -85,19 +85,6 @@ struct git_stash_view: View {
             .onChange(of: searchText) { value in
                 filterStash()
             }
-    }
-    
-    var view_empty: some View {
-        VStack {
-            Spacer()
-            Text("No Stash")
-                .font(.title2)
-                .fontWeight(.light)
-                .foregroundColor(.gray)
-            Spacer()
-        }
-        .frame(maxWidth: .infinity, maxHeight: .infinity)
-        .contentShape(Rectangle())
     }
     
     // 视图：显示stash

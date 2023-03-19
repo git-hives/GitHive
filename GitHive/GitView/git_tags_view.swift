@@ -33,15 +33,18 @@ struct git_tags_view: View {
         VStack() {
             view_filter
             
-            ScrollView(.vertical, showsIndicators: true) {
-                view_tag
+            if rawTagsList.isEmpty {
+                view_empty(text: "No Tags")
+            } else {
+                ScrollView(.vertical, showsIndicators: true) {
+                    view_tag
+                }
             }
         }
         .onAppear() {
             DispatchQueue.main.asyncAfter(deadline: .now() + 0.2) {
                 getGitAllTagsList(repoPath: repoPath)
             }
-            
         }
         .onChange(of: repoPath) { value in
             DispatchQueue.main.asyncAfter(deadline: .now() + 1) {
@@ -57,6 +60,11 @@ struct git_tags_view: View {
             DispatchQueue.main.asyncAfter(deadline: .now() + 0.5) {
                 getGitAllTagsList(repoPath: repoPath)
             }
+        }
+        .contextMenu {
+            Button("Refresh", action: {
+                getGitAllTagsList(repoPath: repoPath)
+            })
         }
     }
     
