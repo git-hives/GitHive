@@ -70,10 +70,10 @@ struct git_stash_view: View {
                 getGitAllStashList()
             })
             Divider()
-            Button("Stash Create", action: {
+            Button("Create Stash", action: {
                 self.isPresentedForStashSave.toggle()
             })
-            Button("Stash Clear", action: {
+            Button("Clear Stash", action: {
                 gitStashClear(repoPath: repoPath, selectedStashName: $selectedStashName)
             })
             .disabled(rawStashList.count == 0)
