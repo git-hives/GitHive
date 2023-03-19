@@ -26,6 +26,8 @@ struct git_stash_view: View {
     @State var iconFoldLocal: Bool = false
     @State var iconFoldRemote: Bool = false
     
+    @State var isPresentedForStashSave: Bool = false
+    
     var repoPath: String {
         GitObservable.GitProjectPathProperty
     }
@@ -68,10 +70,20 @@ struct git_stash_view: View {
                 getGitAllStashList()
             })
             Divider()
+            Button("Stash Create", action: {
+                self.isPresentedForStashSave.toggle()
+            })
             Button("Stash Clear", action: {
                 gitStashClear(repoPath: repoPath, selectedStashName: $selectedStashName)
             })
             .disabled(rawStashList.count == 0)
+        }
+        .sheet(isPresented: $isPresentedForStashSave) {
+            git_stash_save_view(isPresented: $isPresentedForStashSave, title: "Create stash", placeholder: "stash message", onConfirm: { value in
+                if !value.isEmpty {
+                    gitStashSave(LocalRepoDir: repoPath, cmd: value)
+                }
+            })
         }
     }
     
@@ -242,7 +254,6 @@ func gitStashDrop(repoPath: String, name: String, selectedStashName: Binding<Str
 
 
 func gitStashClear(repoPath: String, selectedStashName: Binding<String>) {
-
     Task {
         do {
             let msg_for_drop = "Are you sure you want to remove all the stash entries?"
@@ -255,6 +266,23 @@ func gitStashClear(repoPath: String, selectedStashName: Binding<String>) {
             if result.isEmpty {
                 isRefreshStashList += 1
                 selectedStashName.wrappedValue = " "
+            } else {
+                _ = await showAlertAsync(title: "", msg: result, ConfirmBtnText: "OK")
+            }
+        } catch let error {
+            let msg = getErrorMessage(etype: error as! GitError)
+            _ = await showAlertAsync(title: "Error", msg: msg, ConfirmBtnText: "Ok")
+        }
+    }
+}
+
+
+func gitStashSave(LocalRepoDir: String, cmd: String) {
+    Task {
+        do {
+            let result = try await GitStashHelper.save(LocalRepoDir: LocalRepoDir, cmd: cmd)
+            if result == "success" {
+                isRefreshStashList += 1
             } else {
                 _ = await showAlertAsync(title: "", msg: result, ConfirmBtnText: "OK")
             }

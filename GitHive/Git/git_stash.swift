@@ -132,6 +132,24 @@ class GitStashHelper: runGit {
         }
     }
     
+    // stash: save
+    static func save(LocalRepoDir: String, cmd: String) async throws -> String {
+        let save_cmd = cmd.components(separatedBy: " ")
+        let output = try await executeGitAsync2(at: LocalRepoDir, command: save_cmd)
+        
+        print("git Stash save命令行:", save_cmd)
+        print("git Stash save结果:", output)
+        
+        guard let output = output else {
+            throw GitError.gitRunFailed
+        }
+        if output.contains("Saved") {
+            return "success"
+        } else {
+            return output
+        }
+    }
+    
     // stash: clear
     static func clear(LocalRepoDir: String) async throws -> String {
         let cmd: [String] = ["stash", "clear"]

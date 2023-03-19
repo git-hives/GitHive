@@ -54,6 +54,7 @@
 		634E5CD429BC2E1F00A2C75B /* app-settings-view.swift in Sources */ = {isa = PBXBuildFile; fileRef = 634E5CD329BC2E1F00A2C75B /* app-settings-view.swift */; };
 		634E5CD629BC2E7D00A2C75B /* open_local_repository.swift in Sources */ = {isa = PBXBuildFile; fileRef = 634E5CD529BC2E7D00A2C75B /* open_local_repository.swift */; };
 		637736F329C6EEF700D63757 /* view_empty.swift in Sources */ = {isa = PBXBuildFile; fileRef = 637736F229C6EEF700D63757 /* view_empty.swift */; };
+		637736F629C730DB00D63757 /* git_stash_save_view.swift in Sources */ = {isa = PBXBuildFile; fileRef = 637736F529C730DB00D63757 /* git_stash_save_view.swift */; };
 		63CB38F629BDBA9F005FC613 /* git_tag.swift in Sources */ = {isa = PBXBuildFile; fileRef = 63CB38F529BDBA9F005FC613 /* git_tag.swift */; };
 		63CB38F829BDC579005FC613 /* git_stash.swift in Sources */ = {isa = PBXBuildFile; fileRef = 63CB38F729BDC579005FC613 /* git_stash.swift */; };
 		63F99FA929BF6612002BC6C2 /* ui_alert_with_inputbox.swift in Sources */ = {isa = PBXBuildFile; fileRef = 63F99FA829BF6612002BC6C2 /* ui_alert_with_inputbox.swift */; };
@@ -110,6 +111,7 @@
 		634E5CD329BC2E1F00A2C75B /* app-settings-view.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "app-settings-view.swift"; sourceTree = "<group>"; };
 		634E5CD529BC2E7D00A2C75B /* open_local_repository.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = open_local_repository.swift; sourceTree = "<group>"; };
 		637736F229C6EEF700D63757 /* view_empty.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = view_empty.swift; sourceTree = "<group>"; };
+		637736F529C730DB00D63757 /* git_stash_save_view.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = git_stash_save_view.swift; sourceTree = "<group>"; };
 		63CB38F529BDBA9F005FC613 /* git_tag.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = git_tag.swift; sourceTree = "<group>"; };
 		63CB38F729BDC579005FC613 /* git_stash.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = git_stash.swift; sourceTree = "<group>"; };
 		63F99FA829BF6612002BC6C2 /* ui_alert_with_inputbox.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ui_alert_with_inputbox.swift; sourceTree = "<group>"; };
@@ -244,6 +246,7 @@
 		634E5C8F29BC2C1F00A2C75B /* GitView */ = {
 			isa = PBXGroup;
 			children = (
+				637736F429C7309900D63757 /* stash */,
 				634E5CA329BC2D1800A2C75B /* git_branch_create_view.swift */,
 				634E5CA629BC2D1800A2C75B /* git_branch_view.swift */,
 				634E5CA429BC2D1800A2C75B /* git_clone_view.swift */,
@@ -254,8 +257,6 @@
 				634E5C9C29BC2D1800A2C75B /* git_logs_view.swift */,
 				634E5CA529BC2D1800A2C75B /* git_pull_view.swift */,
 				634E5C9B29BC2D1800A2C75B /* git_push_view.swift */,
-				63FF605829C20B5A002BCE44 /* git_stash_details_view.swift */,
-				634E5CA229BC2D1800A2C75B /* git_stash_view.swift */,
 				6323158A29C362250000EDFC /* git_tag_details_view.swift */,
 				634E5C9E29BC2D1800A2C75B /* git_tags_view.swift */,
 				634E5CA129BC2D1800A2C75B /* toolbar_branch_view.swift */,
@@ -264,6 +265,16 @@
 				637736F229C6EEF700D63757 /* view_empty.swift */,
 			);
 			path = GitView;
+			sourceTree = "<group>";
+		};
+		637736F429C7309900D63757 /* stash */ = {
+			isa = PBXGroup;
+			children = (
+				63FF605829C20B5A002BCE44 /* git_stash_details_view.swift */,
+				634E5CA229BC2D1800A2C75B /* git_stash_view.swift */,
+				637736F529C730DB00D63757 /* git_stash_save_view.swift */,
+			);
+			path = stash;
 			sourceTree = "<group>";
 		};
 /* End PBXGroup section */
@@ -358,6 +369,7 @@
 				634E5CCF29BC2D5A00A2C75B /* ui_styles.swift in Sources */,
 				6323158B29C362250000EDFC /* git_tag_details_view.swift in Sources */,
 				634E5CD229BC2D5A00A2C75B /* ui_view.swift in Sources */,
+				637736F629C730DB00D63757 /* git_stash_save_view.swift in Sources */,
 				63124AF029C0A20500123FB3 /* git_pull.swift in Sources */,
 				634E5CAA29BC2D1800A2C75B /* git_logs_view.swift in Sources */,
 				634E5CAF29BC2D1800A2C75B /* toolbar_branch_view.swift in Sources */,
