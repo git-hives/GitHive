@@ -196,8 +196,7 @@ private struct show_branch: View {
             HStack {
                 if currentBranch == item.name {
                     Text("* \(item.name)")
-                        .foregroundColor(selectedItemId == item.id ? .white : .primary)
-                        .fontWeight(.bold)
+                        .foregroundColor(selectedItemId == item.id ? .white : .blue)
                 } else {
                     Text(item.name)
                         .foregroundColor(selectedItemId == item.id ? .white : .primary)
