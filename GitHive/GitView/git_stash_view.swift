@@ -34,11 +34,14 @@ struct git_stash_view: View {
         VStack() {
             view_filter
             
-            ScrollView(.vertical, showsIndicators: true) {
-                view_stash
+            if stashList.isEmpty {
+                view_empty
+            } else {
+                ScrollView(.vertical, showsIndicators: true) {
+                    view_stash
+                }
             }
         }
-        .frame(maxWidth: .infinity, maxHeight: .infinity)
         .onAppear() {
             DispatchQueue.main.asyncAfter(deadline: .now() + 0.2) {
                 getGitAllStashList()
@@ -82,6 +85,19 @@ struct git_stash_view: View {
             .onChange(of: searchText) { value in
                 filterStash()
             }
+    }
+    
+    var view_empty: some View {
+        VStack {
+            Spacer()
+            Text("No Stash")
+                .font(.title2)
+                .fontWeight(.light)
+                .foregroundColor(.gray)
+            Spacer()
+        }
+        .frame(maxWidth: .infinity, maxHeight: .infinity)
+        .contentShape(Rectangle())
     }
     
     // 视图：显示stash
